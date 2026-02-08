@@ -8,15 +8,101 @@
 
 import { IDL } from '@icp-sdk/core/candid';
 
+export const MessageInput = IDL.Record({
+  'content' : IDL.Text,
+  'author' : IDL.Text,
+});
+export const UserRole = IDL.Variant({
+  'admin' : IDL.Null,
+  'user' : IDL.Null,
+  'guest' : IDL.Null,
+});
+export const UserProfile = IDL.Record({ 'name' : IDL.Text });
+export const Message = IDL.Record({
+  'content' : IDL.Text,
+  'author' : IDL.Text,
+  'timestamp' : IDL.Int,
+});
+export const ChatView = IDL.Record({
+  'title' : IDL.Text,
+  'creator' : IDL.Principal,
+  'messages' : IDL.Vec(Message),
+  'chatId' : IDL.Nat,
+});
+export const ChatSummary = IDL.Record({
+  'title' : IDL.Text,
+  'creator' : IDL.Principal,
+  'chatId' : IDL.Nat,
+});
+
 export const idlService = IDL.Service({
+  '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+  'addMessage' : IDL.Func([IDL.Nat, MessageInput, IDL.Int], [], []),
+  'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+  'createChat' : IDL.Func([IDL.Text], [IDL.Nat], []),
+  'deleteChat' : IDL.Func([IDL.Nat], [], []),
+  'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
+  'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+  'getChat' : IDL.Func([IDL.Nat], [IDL.Opt(ChatView)], []),
   'getChatbotReply' : IDL.Func([IDL.Text], [IDL.Text], []),
+  'getUserChats' : IDL.Func([], [IDL.Vec(ChatSummary)], ['query']),
+  'getUserProfile' : IDL.Func(
+      [IDL.Principal],
+      [IDL.Opt(UserProfile)],
+      ['query'],
+    ),
+  'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+  'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
 });
 
 export const idlInitArgs = [];
 
 export const idlFactory = ({ IDL }) => {
+  const MessageInput = IDL.Record({
+    'content' : IDL.Text,
+    'author' : IDL.Text,
+  });
+  const UserRole = IDL.Variant({
+    'admin' : IDL.Null,
+    'user' : IDL.Null,
+    'guest' : IDL.Null,
+  });
+  const UserProfile = IDL.Record({ 'name' : IDL.Text });
+  const Message = IDL.Record({
+    'content' : IDL.Text,
+    'author' : IDL.Text,
+    'timestamp' : IDL.Int,
+  });
+  const ChatView = IDL.Record({
+    'title' : IDL.Text,
+    'creator' : IDL.Principal,
+    'messages' : IDL.Vec(Message),
+    'chatId' : IDL.Nat,
+  });
+  const ChatSummary = IDL.Record({
+    'title' : IDL.Text,
+    'creator' : IDL.Principal,
+    'chatId' : IDL.Nat,
+  });
+  
   return IDL.Service({
+    '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+    'addMessage' : IDL.Func([IDL.Nat, MessageInput, IDL.Int], [], []),
+    'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+    'createChat' : IDL.Func([IDL.Text], [IDL.Nat], []),
+    'deleteChat' : IDL.Func([IDL.Nat], [], []),
+    'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
+    'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+    'getChat' : IDL.Func([IDL.Nat], [IDL.Opt(ChatView)], []),
     'getChatbotReply' : IDL.Func([IDL.Text], [IDL.Text], []),
+    'getUserChats' : IDL.Func([], [IDL.Vec(ChatSummary)], ['query']),
+    'getUserProfile' : IDL.Func(
+        [IDL.Principal],
+        [IDL.Opt(UserProfile)],
+        ['query'],
+      ),
+    'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+    'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
   });
 };
 

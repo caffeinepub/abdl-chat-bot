@@ -10,7 +10,42 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
-export interface _SERVICE { 'getChatbotReply' : ActorMethod<[string], string> }
+export interface ChatSummary {
+  'title' : string,
+  'creator' : Principal,
+  'chatId' : bigint,
+}
+export interface ChatView {
+  'title' : string,
+  'creator' : Principal,
+  'messages' : Array<Message>,
+  'chatId' : bigint,
+}
+export interface Message {
+  'content' : string,
+  'author' : string,
+  'timestamp' : bigint,
+}
+export interface MessageInput { 'content' : string, 'author' : string }
+export interface UserProfile { 'name' : string }
+export type UserRole = { 'admin' : null } |
+  { 'user' : null } |
+  { 'guest' : null };
+export interface _SERVICE {
+  '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
+  'addMessage' : ActorMethod<[bigint, MessageInput, bigint], undefined>,
+  'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
+  'createChat' : ActorMethod<[string], bigint>,
+  'deleteChat' : ActorMethod<[bigint], undefined>,
+  'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
+  'getCallerUserRole' : ActorMethod<[], UserRole>,
+  'getChat' : ActorMethod<[bigint], [] | [ChatView]>,
+  'getChatbotReply' : ActorMethod<[string], string>,
+  'getUserChats' : ActorMethod<[], Array<ChatSummary>>,
+  'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
+  'isCallerAdmin' : ActorMethod<[], boolean>,
+  'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
+}
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];
 export declare const idlFactory: IDL.InterfaceFactory;

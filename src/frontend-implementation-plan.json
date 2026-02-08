@@ -1,124 +1,118 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Abdl Chat Bot — Safe PG-13 Chat UI (no external LLM)",
+  "title": "Authentication UI, multi-chat history, and auto-save persistence",
   "requirements": [
     {
-      "id": "REQ-1",
-      "summary": "Create a branded chat screen UI with message history, composer, send/loading, and friendly error handling.",
+      "id": "REQ-7",
+      "summary": "Add Internet Identity login/logout UI and authenticated state indicator (English) using existing InternetIdentityProvider.",
       "acceptanceCriteria": [
-        "The app displays a chat interface with a scrollable message history and a composer to send messages.",
-        "Messages are visually distinguished between user and assistant.",
-        "Sending a message shows a loading indicator until a reply is returned.",
-        "Any failure to get a reply shows a non-technical error message in English and keeps the user’s message visible."
+        "A \"Sign in\" (or equivalent) action is visible when the user is not authenticated and triggers Internet Identity login via the existing InternetIdentityProvider.",
+        "A \"Sign out\" action is visible when the user is authenticated and logs the user out via the existing Internet Identity hook.",
+        "The UI displays an authenticated state indicator (e.g., \"Signed in\") and does not expose any secrets or API keys.",
+        "All user-facing authentication text is in English."
       ],
       "file_operations": [
         {
+          "path": "frontend/src/components/AuthButton.tsx",
+          "operation": "create",
+          "description": "Create a header authentication control that uses the existing immutable `useInternetIdentity` hook to trigger Internet Identity sign-in/sign-out and shows an authenticated state label. Use shadcn-ui `Button` for consistent styling. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/ProfileSetupDialog.tsx",
+          "operation": "create",
+          "description": "Create a first-login profile setup dialog (name only) that calls backend `getCallerUserProfile`/`saveCallerUserProfile` via the actor and avoids displaying the principal id. Use shadcn-ui `Dialog`, `Input`, and `Button` components. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hooks/useCurrentUserProfile.ts",
+          "operation": "create",
+          "description": "Add a React Query hook that fetches the current user's profile from the actor (returns null when absent) and exposes loading/fetched state to prevent UI flashing during actor initialization."
+        },
+        {
           "path": "frontend/src/App.tsx",
-          "operation": "create",
-          "description": "Create the main app shell for “Abdl Chat Bot” and implement the core chat UI (scrollable message list with distinct user/assistant styling, text input + send button, loading indicator while awaiting a reply, and an English non-technical error banner). Wire message sending to the backend capability via the existing actor hook (useActor) calling getChatbotReply(prompt). Use shadcn-ui components (e.g., Button, Card, ScrollArea, Textarea/Input, Alert) to speed up consistent UI construction; verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/components/ChatMessage.tsx",
-          "operation": "create",
-          "description": "Add a reusable chat message row that renders user vs assistant message styling, and supports an assistant avatar slot for assistant messages. Use shadcn-ui primitives/utilities as appropriate for consistent styling; verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/components/ChatComposer.tsx",
-          "operation": "create",
-          "description": "Add a reusable chat composer (text input + send button) that supports disabled state during loading and triggers send on button click (and optionally Enter). Use shadcn-ui components for form controls/buttons; verify the component's usage instructions before implementing."
+          "operation": "modify",
+          "description": "Wire `AuthButton` into the existing header (no new routes) and display a simple authenticated indicator (e.g., \"Signed in as <name>\") sourced from `useCurrentUserProfile`. Also trigger `ProfileSetupDialog` only when authenticated and the profile is missing. Keep existing Safety & Usage and DeveloperSafetyNote UI intact. Verify the component's usage instructions before implementing."
         }
       ]
     },
     {
-      "id": "REQ-3",
-      "summary": "Add a Safety & Usage disclosure and a Clear chat action that resets the current conversation without refresh.",
+      "id": "REQ-8",
+      "summary": "Implement a ChatGPT-like conversation list UI to create, switch, and delete past chats in the current user context.",
       "acceptanceCriteria": [
-        "A clearly visible “Safety & Usage” section (or modal) is present and written in English.",
-        "A “Clear chat” control removes all messages from the current chat view without requiring a page refresh."
+        "The app shows a conversation list (tabs/sidebar/list) containing previously created chats for the current user context.",
+        "The user can create a new chat and switch between chats without losing data.",
+        "The user can delete a chat from history (with a basic confirmation to prevent accidental deletion).",
+        "Switching chats updates the message list to the selected conversation’s messages."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/SafetyUsage.tsx",
+          "path": "frontend/src/components/ChatHistoryPanel.tsx",
           "operation": "create",
-          "description": "Create a visible “Safety & Usage” disclosure section (or modal content) in English stating the bot does not provide explicit sexual content and may refuse certain requests. Use shadcn-ui components (e.g., Dialog/Popover/Accordion, Alert) to present the disclosure cleanly; verify the component's usage instructions before implementing."
+          "description": "Create a conversation list panel (sidebar/list) that renders chat summaries, supports selecting an active chat, creating a new chat, and deleting a chat with confirmation. Use shadcn-ui components such as `ScrollArea`, `Button`, and `AlertDialog` for confirmation UI. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hooks/useChats.ts",
+          "operation": "create",
+          "description": "Add React Query hooks for listing chats and fetching a selected chat when authenticated (actor `getUserChats`, `getChat`) and for creating/deleting chats (actor `createChat`, `deleteChat`). Ensure queries are keyed per-identity via existing actor behavior and can be cleared on logout by relying on QueryClient clearing."
         },
         {
           "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Wire the Safety & Usage disclosure into the chat screen (always visible area or a clearly labeled button that opens it) and add a prominent “Clear chat” action that resets the in-memory chat state without page refresh. Use shadcn-ui Button for the action styling; verify the component's usage instructions before implementing."
+          "description": "Refactor the layout to include `ChatHistoryPanel` alongside the message area, manage `selectedChatId` state, and update the rendered message list to match the selected conversation. Ensure create/switch/delete interactions update the UI without losing in-memory message edits during normal use. Verify the component's usage instructions before implementing."
         }
       ]
     },
     {
-      "id": "REQ-4",
-      "summary": "Ensure the UI includes a developer-facing warning about compromised API keys and never storing/pasting secrets; do not include the provided key anywhere.",
+      "id": "REQ-9",
+      "summary": "Auto-save and restore chats across refresh with behavior depending on authentication state (backend persistence when signed in, local persistence when anonymous).",
       "acceptanceCriteria": [
-        "No code contains the provided API key string.",
-        "The app includes a clear warning (in English) that the shared key must be revoked/rotated and that API keys should be stored as secrets, not in client code or chat logs."
+        "When authenticated, chats are persisted to the backend and are restored after refresh and after logging back in.",
+        "When not authenticated, the current chat is auto-saved locally (e.g., browser storage) and restored after refresh for the same browser.",
+        "Auto-save happens automatically on send and when assistant replies are received; users do not need to click a save button.",
+        "No data loss occurs when refreshing the page during normal use (excluding in-flight requests)."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/DeveloperSafetyNote.tsx",
+          "path": "frontend/src/utils/chatLocalStore.ts",
           "operation": "create",
-          "description": "Add a developer-facing note component (English) warning that any shared API key is compromised and must be revoked/rotated, and that secrets must never be pasted into chat or committed to the codebase. Do not include the actual key text anywhere. Use shadcn-ui Alert/Callout styling for visibility; verify the component's usage instructions before implementing."
+          "description": "Implement local (anonymous) chat persistence helpers using browser storage: store chat list, per-chat messages, selected chat id, and timestamps; include safe JSON parsing and versioning to avoid crashes on malformed data."
+        },
+        {
+          "path": "frontend/src/hooks/useChatAutosave.ts",
+          "operation": "create",
+          "description": "Create a hook that exposes `persistOnUserSend` and `persistOnAssistantReply` behaviors. When authenticated, append messages to the selected chat via actor `addMessage` (and create a chat if needed). When anonymous, write changes through `chatLocalStore`. Also expose `restoreOnLoad` behavior to hydrate initial state from backend (authenticated) or local storage (anonymous)."
         },
         {
           "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Render the developer safety note in a visible place in-app (e.g., inside the Safety & Usage area or a clearly labeled “Developer Note” section) so the warning is discoverable during development. Ensure no UI or state stores/persists secrets (no localStorage/sessionStorage for chat content). Use shadcn-ui layout components if helpful; verify the component's usage instructions before implementing."
+          "description": "Integrate `useChatAutosave` so that: (1) on initial mount/actor readiness it restores chats and the active conversation; (2) on send it immediately updates UI and persists automatically; (3) on assistant reply it persists automatically; and (4) on logout it falls back to anonymous local persistence and clears any authenticated cached data in UI state (no secrets or API keys). Verify the component's usage instructions before implementing."
         }
       ]
     },
     {
-      "id": "REQ-5",
-      "summary": "Apply a consistent warm-neutral theme with teal/green accent (no blue/purple primary palette) across the chat UI for mobile and desktop.",
+      "id": "REQ-11",
+      "summary": "Refactor the main chat screen from single in-memory conversation to multi-chat selection + persistence, preserving Safety & Usage and DeveloperSafetyNote UI and error/loading behavior.",
       "acceptanceCriteria": [
-        "UI uses a consistent theme (e.g., warm neutrals with a teal/green accent, or monochrome with an accent) applied across header, chat bubbles, buttons, and background.",
-        "The primary palette is not blue/purple.",
-        "Layout looks intentional on mobile and desktop widths."
+        "The existing Safety & Usage dialog remains accessible and unchanged in meaning.",
+        "The existing DeveloperSafetyNote remains visible and unchanged in meaning.",
+        "The existing \"Clear Chat\" behavior is updated to clear the currently selected conversation (not all conversations) and remains visible only when there is content to clear.",
+        "The app continues to show loading and error states for sending messages, and errors are displayed in English."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/index.css",
+          "path": "frontend/src/types/chat.ts",
           "operation": "create",
-          "description": "Create global styles and set theme CSS variables (used by Tailwind/shadcn tokens) to a warm neutral base with a teal/green primary accent (explicitly avoid blue/purple as primary). Include sensible typography defaults and spacing for a clean chat layout."
+          "description": "Define shared frontend chat types for UI state (conversation, message view model) and mapping helpers from backend `ChatView/Message` to UI message shape, without leaking principals into UI."
         },
         {
           "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Apply the theme consistently across header, background, chat bubbles, buttons, and states (loading/error). Ensure responsive layout (mobile-first) with readable spacing and constrained content width on desktop. Use shadcn-ui components/tokens to stay consistent; verify the component's usage instructions before implementing."
-        }
-      ]
-    },
-    {
-      "id": "REQ-6",
-      "summary": "Add generated static brand assets (logo + assistant avatar) and render them in the UI.",
-      "acceptanceCriteria": [
-        "Generated images are added under frontend/public/assets/generated.",
-        "The logo is visible in the app header (or landing area).",
-        "The assistant avatar is shown next to assistant messages (or in the chat header)."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/public/assets/generated/abdl-chat-bot-logo.dim_512x512.png",
-          "operation": "create",
-          "description": "Add the provided generated logo image asset as a static file at this exact path (Minimal typographic logo reading “Abdl Chat Bot”, warm neutral background with teal accent)."
+          "description": "Replace the single `messages` state with multi-chat state keyed by conversation id, driven by the selected conversation. Update \"Clear Chat\" to clear only the active conversation: for authenticated users, clear by deleting the active chat and immediately creating/selecting a replacement empty chat; for anonymous users, clear by removing messages for the active local chat. Keep Safety & Usage dialog and DeveloperSafetyNote placement/content unchanged, and maintain pending/loading indicator and English error messaging for send failures. Verify the component's usage instructions before implementing."
         },
         {
-          "path": "frontend/public/assets/generated/abdl-chat-bot-avatar.dim_256x256.png",
-          "operation": "create",
-          "description": "Add the provided generated assistant avatar image asset as a static file at this exact path (Friendly simple robot head avatar icon, flat vector style, warm neutral + teal palette)."
-        },
-        {
-          "path": "frontend/src/App.tsx",
+          "path": "frontend/src/components/ChatHistoryPanel.tsx",
           "operation": "modify",
-          "description": "Render the logo image (frontend/public/assets/generated/abdl-chat-bot-logo.dim_512x512.png) in the app header/branding area and pass the avatar image (frontend/public/assets/generated/abdl-chat-bot-avatar.dim_256x256.png) into assistant message rendering so it appears next to assistant messages. Use shadcn-ui layout components if needed; verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/components/ChatMessage.tsx",
-          "operation": "modify",
-          "description": "Update assistant message rendering to include the assistant avatar image (frontend/public/assets/generated/abdl-chat-bot-avatar.dim_256x256.png) next to assistant messages while keeping user messages distinct. Use shadcn-ui styling conventions where applicable; verify the component's usage instructions before implementing."
+          "description": "Ensure the panel reflects selection state, disables destructive actions during in-flight operations, and surfaces basic errors in English (e.g., delete failure) without breaking the main chat UI. Verify the component's usage instructions before implementing."
         }
       ]
     }

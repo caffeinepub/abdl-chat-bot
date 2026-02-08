@@ -1,15 +1,13 @@
 # Specification
 
 ## Summary
-**Goal:** Create a safe, general-purpose chatbot website branded as “Abdl Chat Bot” that supports PG-13 conversations without any external LLM integrations.
+**Goal:** Add Internet Identity authentication UI, multi-conversation chat history, and automatic chat persistence (local for anonymous users and backend for signed-in users).
 
 **Planned changes:**
-- Build a chat UI with scrollable message history, user/assistant message styling, text input, send button, loading indicator, and a friendly error state that preserves the user’s message.
-- Implement a single backend chat reply endpoint that accepts a user message and returns an assistant message, with rule-based safe replies.
-- Add safety handling: refuse/redirect explicit sexual, fetish (including ABDL/diaper/urination/defecation), or non-consensual requests with a clear English refusal and safer alternatives.
-- Add a “Safety & Usage” disclosure in the UI and a visible “Clear chat” action to reset the current conversation without refresh.
-- Add a developer-facing warning in-app (or visible repo note page/screen) stating the posted API key is compromised and must be revoked/rotated, and that secrets must never be pasted or committed; do not store/use any API keys.
-- Apply a coherent visual theme (non-blue/purple primary palette) consistently across the chat screen and ensure it looks intentional on mobile and desktop.
-- Add generated static brand images (logo + assistant avatar) under `frontend/public/assets/generated` and render them in the UI (logo in header/landing, avatar next to assistant messages or in chat header).
+- Add visible Sign in/Sign out actions using the existing Internet Identity provider/hooks and display an authenticated state indicator in English.
+- Refactor the chat screen from a single in-memory conversation to support selecting among multiple conversations while keeping Safety & Usage and Developer Safety Note UI intact.
+- Implement a chat history UI (tabs/sidebar/list) to create new chats, switch between past chats, and delete a chat with a basic confirmation.
+- Add automatic save/restore of conversations: persist to backend when authenticated; otherwise auto-save locally and restore on refresh for the same browser; trigger auto-save on send and on assistant reply.
+- Extend the Motoko backend (single-actor, main.mo) with per-user (principal-scoped) chat persistence endpoints: create/list/get/append/delete, with stable storage suitable for upgrades and defined handling for anonymous callers.
 
-**User-visible outcome:** Users can chat with “Abdl Chat Bot” in a clean, themed interface, receive safe PG-13 responses, see clear refusals for explicit/fetish requests, view safety guidance, clear the chat, and see app branding (logo + assistant avatar).
+**User-visible outcome:** Users can sign in/out with Internet Identity, see whether they’re signed in, manage multiple past chats (create/switch/delete), and have chats automatically restored after refresh (and after logging back in when authenticated).

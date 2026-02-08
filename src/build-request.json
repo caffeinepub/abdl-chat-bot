@@ -1,131 +1,118 @@
 {
   "kind": "build_request",
-  "title": "Create a safe, general-purpose chatbot website (Abdl Chat Bot branding) without explicit adult content or external LLM integrations",
+  "title": "Add authentication, chat history tabs, and auto-save chat persistence",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-1",
-      "text": "Build a basic chatbot web UI branded as “Abdl Chat Bot” that supports a standard PG-13 conversation experience (no explicit sexual content). The chat UI must include: a message list (user/assistant styling), a text input, send button, loading state, and error state.",
+      "id": "REQ-7",
+      "text": "Add Internet Identity login/logout UI so users can \"login/signup\" and the app clearly reflects whether the user is authenticated.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-user-1"
+          "msg-6"
         ],
         "quotes": [
-          "This ai chat bot is called \"Abdl Chat Bot.\""
+          "Can you add somethings that chatgpt has. The things I want you to add are; tabs of past chats, login/signup, and auto save for chats."
         ]
       },
       "acceptanceCriteria": [
-        "The app displays a chat interface with a scrollable message history and a composer to send messages.",
-        "Messages are visually distinguished between user and assistant.",
-        "Sending a message shows a loading indicator until a reply is returned.",
-        "Any failure to get a reply shows a non-technical error message in English and keeps the user’s message visible."
+        "A \"Sign in\" (or equivalent) action is visible when the user is not authenticated and triggers Internet Identity login via the existing InternetIdentityProvider.",
+        "A \"Sign out\" action is visible when the user is authenticated and logs the user out via the existing Internet Identity hook.",
+        "The UI displays an authenticated state indicator (e.g., \"Signed in\") and does not expose any secrets or API keys.",
+        "All user-facing authentication text is in English."
       ]
     },
     {
-      "id": "REQ-2",
-      "text": "Implement a backend chatbot reply endpoint that returns safe, non-explicit responses. The backend must refuse or redirect requests for explicit sexual content, fetish content, or non-consensual content, and must respond with a clear refusal message in English when such content is requested.",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-user-1"
-        ],
-        "quotes": [
-          "a ai chat bot that can do anything the person wants including sex, diaper focused, diaper peeing/pooping, abdl, and more."
-        ]
-      },
-      "acceptanceCriteria": [
-        "Backend exposes a single update method that accepts a user message and returns an assistant message.",
-        "When the user message requests explicit sexual/fetish content, the assistant response refuses and offers a safer alternative (e.g., general relationship advice, non-explicit wellness tips, or a different topic).",
-        "For non-explicit messages, the assistant returns a helpful, coherent response (rule-based is acceptable)."
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "text": "Add a simple “Safety & Usage” disclosure in the UI stating that the chatbot does not provide explicit sexual content and may refuse certain requests, and provide a visible “Clear chat” action that resets the current conversation in the UI.",
+      "id": "REQ-8",
+      "text": "Implement chat history tabs/list UI (similar to ChatGPT) that allows switching between multiple past conversations for the current user.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-user-1"
+          "msg-6"
         ],
         "quotes": [
-          "can do anything the person wants including sex..."
+          "tabs of past chats"
         ]
       },
       "acceptanceCriteria": [
-        "A clearly visible “Safety & Usage” section (or modal) is present and written in English.",
-        "A “Clear chat” control removes all messages from the current chat view without requiring a page refresh."
+        "The app shows a conversation list (tabs/sidebar/list) containing previously created chats for the current user context.",
+        "The user can create a new chat and switch between chats without losing data.",
+        "The user can delete a chat from history (with a basic confirmation to prevent accidental deletion).",
+        "Switching chats updates the message list to the selected conversation’s messages."
       ]
     },
     {
-      "id": "REQ-4",
-      "text": "Do not use or store any user-provided OpenAI API key. Add a developer-facing note in the repo (e.g., in a visible frontend screen or a documentation page in-app) warning that the posted key is compromised and must be revoked/rotated, and that secrets must never be pasted into chat or committed to the codebase.",
+      "id": "REQ-9",
+      "text": "Add automatic saving and restoring of chats so conversation state persists across refresh and can be restored later, with behavior dependent on authentication state.",
       "target": "both",
       "source": {
         "messageIds": [
-          "msg-user-1"
+          "msg-6"
         ],
         "quotes": [
-          "The openai code is; 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."
+          "auto save for chats"
         ]
       },
       "acceptanceCriteria": [
-        "No code contains the provided API key string.",
-        "The app includes a clear warning (in English) that the shared key must be revoked/rotated and that API keys should be stored as secrets, not in client code or chat logs."
+        "When authenticated, chats are persisted to the backend and are restored after refresh and after logging back in.",
+        "When not authenticated, the current chat is auto-saved locally (e.g., browser storage) and restored after refresh for the same browser.",
+        "Auto-save happens automatically on send and when assistant replies are received; users do not need to click a save button.",
+        "No data loss occurs when refreshing the page during normal use (excluding in-flight requests)."
       ]
     },
     {
-      "id": "REQ-5",
-      "text": "Establish a coherent visual theme for the app (colors, typography, spacing, and layout) and apply it consistently across the chat screen. Do not use a blue/purple primary palette.",
-      "target": "frontend",
+      "id": "REQ-10",
+      "text": "Extend the Motoko backend to support per-user chat persistence needed for chat history: create/list/get/update/delete chats, scoped to the authenticated caller principal.",
+      "target": "backend",
       "source": {
         "messageIds": [
-          "msg-user-1"
+          "msg-6"
+        ],
+        "quotes": [
+          "tabs of past chats, login/signup, and auto save for chats."
         ]
       },
       "acceptanceCriteria": [
-        "UI uses a consistent theme (e.g., warm neutrals with a teal/green accent, or monochrome with an accent) applied across header, chat bubbles, buttons, and background.",
-        "The primary palette is not blue/purple.",
-        "Layout looks intentional on mobile and desktop widths."
+        "Backend exposes methods to create a chat, list chats for the caller, fetch a chat’s messages, append messages (user and assistant), and delete a chat.",
+        "All persisted chat data is scoped so one principal cannot read or modify another principal’s chats.",
+        "Anonymous callers either receive an explicit error for persistence endpoints or are handled in a clearly defined way (frontend must still function with local persistence when anonymous).",
+        "State is stored using stable data structures suitable for upgrade; only create backend/migration.mo if required by an actual state upgrade constraint."
       ]
     },
     {
-      "id": "REQ-6",
-      "text": "Generate and include a simple brand asset set as static images, and render them in the UI: an app logo and an assistant avatar.",
+      "id": "REQ-11",
+      "text": "Refactor the existing single-chat in-memory state in the main chat screen to support multi-chat selection and persistence while keeping existing Safety & Usage and Developer Safety Note UI intact.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-user-1"
+          "msg-6"
         ],
         "quotes": [
-          "This ai chat bot is called \"Abdl Chat Bot.\""
+          "tabs of past chats, login/signup, and auto save for chats."
         ]
       },
       "acceptanceCriteria": [
-        "Generated images are added under frontend/public/assets/generated.",
-        "The logo is visible in the app header (or landing area).",
-        "The assistant avatar is shown next to assistant messages (or in the chat header)."
+        "The existing Safety & Usage dialog remains accessible and unchanged in meaning.",
+        "The existing DeveloperSafetyNote remains visible and unchanged in meaning.",
+        "The existing \"Clear Chat\" behavior is updated to clear the currently selected conversation (not all conversations) and remains visible only when there is content to clear.",
+        "The app continues to show loading and error states for sending messages, and errors are displayed in English."
       ]
     }
   ],
   "constraints": [
-    "Do not build or enable explicit sexual content, fetish content (including ABDL/diaper/urination/defecation), or “anything the person wants” behavior.",
-    "Do not integrate OpenAI or any other external LLM/AI service (no external API calls for chat responses).",
-    "Do not store, hardcode, or expose any API keys in frontend or backend code.",
-    "Frontend files under immutable paths must not be edited: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui."
+    "Backend must remain a single-actor Motoko canister with all logic in backend/main.mo.",
+    "Do not edit files under frontend/immutablePaths (e.g., frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, and frontend/src/components/ui); compose them from other code instead.",
+    "Do not use or store any user-provided OpenAI API key; do not introduce any client-side secret handling.",
+    "Do not add third-party authentication providers; use Internet Identity only."
   ],
   "nonGoals": [
-    "Roleplay or content generation involving explicit sexual content or fetish content.",
-    "Third-party authentication beyond Internet Identity.",
-    "Real-time chat via websockets/push notifications.",
-    "Payments, subscriptions, or age-gating flows.",
-    "External database integrations."
+    "Implementing real ChatGPT/LLM functionality or integrating external LLM APIs.",
+    "Adding real-time messaging (WebSockets) or push notifications.",
+    "Adding external databases or non-Motoko backend services.",
+    "Supporting explicit sexual/fetish content (the app remains PG-13 and may refuse disallowed content)."
   ],
   "imageRequirements": {
-    "required": [
-      "Minimal typographic logo reading “Abdl Chat Bot”, warm neutral background with teal accent (abdl-chat-bot-logo.dim_512x512.png)",
-      "Friendly simple robot head avatar icon, flat vector style, warm neutral + teal palette (abdl-chat-bot-avatar.dim_256x256.png)"
-    ],
+    "required": [],
     "edits": []
   }
 }

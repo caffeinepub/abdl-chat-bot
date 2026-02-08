@@ -1,15 +1,9 @@
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { User } from 'lucide-react';
-
-interface Message {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  timestamp: Date;
-}
+import type { UIMessage } from '../types/chat';
 
 interface ChatMessageProps {
-  message: Message;
+  message: UIMessage;
 }
 
 export function ChatMessage({ message }: ChatMessageProps) {

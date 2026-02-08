@@ -1,49 +1,83 @@
-import { useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import { useState, useEffect } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './hooks/useActor';
+import { useInternetIdentity } from './hooks/useInternetIdentity';
 import { ChatMessage } from './components/ChatMessage';
 import { ChatComposer } from './components/ChatComposer';
 import { SafetyUsage } from './components/SafetyUsage';
 import { DeveloperSafetyNote } from './components/DeveloperSafetyNote';
+import { AuthButton } from './components/AuthButton';
+import { ProfileSetupDialog } from './components/ProfileSetupDialog';
+import { ChatHistoryPanel } from './components/ChatHistoryPanel';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Trash2, Info } from 'lucide-react';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
-
-interface Message {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  timestamp: Date;
-}
+import { useGetCallerUserProfile } from './hooks/useCurrentUserProfile';
+import { useChats, useCreateChat, useDeleteChat } from './hooks/useChats';
+import { useChatAutosave } from './hooks/useChatAutosave';
+import type { UIMessage } from './types/chat';
 
 function App() {
   const { actor } = useActor();
-  const [messages, setMessages] = useState<Message[]>([]);
+  const { identity, clear } = useInternetIdentity();
+  const queryClient = useQueryClient();
+  const isAuthenticated = !!identity;
+
+  // User profile
+  const { data: userProfile, isLoading: profileLoading, isFetched } = useGetCallerUserProfile();
+  const showProfileSetup = isAuthenticated && !profileLoading && isFetched && userProfile === null;
+
+  // Chat state
+  const [selectedChatId, setSelectedChatId] = useState<number | null>(null);
+  const [localMessages, setLocalMessages] = useState<UIMessage[]>([]);
   const [error, setError] = useState<string | null>(null);
 
+  // Fetch chats for authenticated users
+  const { data: chats = [] } = useChats();
+  const createChatMutation = useCreateChat();
+  const deleteChatMutation = useDeleteChat();
+
+  // Auto-save hook
+  const { restoreOnLoad, persistOnUserSend, persistOnAssistantReply } = useChatAutosave(
+    selectedChatId,
+    setSelectedChatId,
+    setLocalMessages
+  );
+
+  // Restore chats on mount/auth change
+  useEffect(() => {
+    restoreOnLoad();
+  }, [isAuthenticated, actor, restoreOnLoad]);
+
+  // Send message mutation
   const sendMessageMutation = useMutation({
     mutationFn: async (prompt: string) => {
       if (!actor) throw new Error('Backend connection not available');
       return await actor.getChatbotReply(prompt);
     },
-    onSuccess: (reply, prompt) => {
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: `user-${Date.now()}`,
-          role: 'user',
-          content: prompt,
-          timestamp: new Date(),
-        },
-        {
-          id: `assistant-${Date.now()}`,
-          role: 'assistant',
-          content: reply,
-          timestamp: new Date(),
-        },
-      ]);
+    onSuccess: async (reply, prompt) => {
+      const userMessage: UIMessage = {
+        id: `user-${Date.now()}`,
+        role: 'user',
+        content: prompt,
+        timestamp: new Date(),
+      };
+      const assistantMessage: UIMessage = {
+        id: `assistant-${Date.now()}`,
+        role: 'assistant',
+        content: reply,
+        timestamp: new Date(),
+      };
+
+      // Update UI immediately
+      setLocalMessages((prev) => [...prev, userMessage, assistantMessage]);
+
+      // Persist both messages
+      await persistOnUserSend(userMessage);
+      await persistOnAssistantReply(assistantMessage);
+
       setError(null);
     },
     onError: (err) => {
@@ -53,15 +87,89 @@ function App() {
     },
   });
 
-  const handleSend = (message: string) => {
+  const handleSend = async (message: string) => {
     if (!message.trim()) return;
     setError(null);
+
+    // For authenticated users, ensure we have a chat
+    if (isAuthenticated && !selectedChatId) {
+      try {
+        const newChatId = await createChatMutation.mutateAsync('New Chat');
+        setSelectedChatId(newChatId);
+      } catch (err) {
+        setError('Failed to create chat. Please try again.');
+        return;
+      }
+    }
+
     sendMessageMutation.mutate(message);
   };
 
-  const handleClearChat = () => {
-    setMessages([]);
+  const handleClearChat = async () => {
+    if (isAuthenticated && selectedChatId !== null) {
+      // Delete current chat and create a new one
+      try {
+        await deleteChatMutation.mutateAsync(selectedChatId);
+        const newChatId = await createChatMutation.mutateAsync('New Chat');
+        setSelectedChatId(newChatId);
+        setLocalMessages([]);
+        setError(null);
+      } catch (err) {
+        setError('Failed to clear chat. Please try again.');
+      }
+    } else {
+      // Anonymous: just clear local messages
+      setLocalMessages([]);
+      setError(null);
+    }
+  };
+
+  const handleLogout = async () => {
+    await clear();
+    queryClient.clear();
+    setSelectedChatId(null);
+    setLocalMessages([]);
     setError(null);
+    // Restore anonymous state
+    restoreOnLoad();
+  };
+
+  const handleNewChat = async () => {
+    if (isAuthenticated) {
+      try {
+        const newChatId = await createChatMutation.mutateAsync('New Chat');
+        setSelectedChatId(newChatId);
+        setLocalMessages([]);
+        setError(null);
+      } catch (err) {
+        setError('Failed to create new chat. Please try again.');
+      }
+    } else {
+      // Anonymous: create new local chat
+      setSelectedChatId(null);
+      setLocalMessages([]);
+      setError(null);
+    }
+  };
+
+  const handleSelectChat = (chatId: number) => {
+    setSelectedChatId(chatId);
+    setError(null);
+  };
+
+  const handleDeleteChat = async (chatId: number) => {
+    try {
+      await deleteChatMutation.mutateAsync(chatId);
+      if (selectedChatId === chatId) {
+        // If deleting current chat, create a new one
+        const newChatId = await createChatMutation.mutateAsync('New Chat');
+        setSelectedChatId(newChatId);
+        setLocalMessages([]);
+      }
+      setError(null);
+    } catch (err) {
+      setError('Failed to delete chat. Please try again.');
+    }
   };
 
   return (
@@ -76,7 +184,12 @@ function App() {
               className="h-10 w-auto"
             />
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
+            {isAuthenticated && userProfile && (
+              <span className="text-sm text-muted-foreground">
+                Signed in as <span className="font-medium text-foreground">{userProfile.name}</span>
+              </span>
+            )}
             <Dialog>
               <DialogTrigger asChild>
                 <Button variant="outline" size="sm">
@@ -88,78 +201,98 @@ function App() {
                 <SafetyUsage />
               </DialogContent>
             </Dialog>
-            {messages.length > 0 && (
+            {localMessages.length > 0 && (
               <Button variant="outline" size="sm" onClick={handleClearChat}>
                 <Trash2 className="mr-2 h-4 w-4" />
                 Clear Chat
               </Button>
             )}
+            <AuthButton onLogout={handleLogout} />
           </div>
         </div>
       </header>
 
-      {/* Main Chat Area */}
-      <main className="container mx-auto flex flex-1 flex-col px-4 py-6">
-        <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col">
-          {/* Messages */}
-          <ScrollArea className="flex-1 pr-4">
-            <div className="space-y-6 pb-6">
-              {messages.length === 0 && (
-                <div className="flex flex-col items-center justify-center py-12 text-center">
-                  <img
-                    src="/assets/generated/abdl-chat-bot-avatar.dim_256x256.png"
-                    alt="Assistant"
-                    className="mb-6 h-24 w-24 rounded-full"
-                  />
-                  <h2 className="mb-2 text-2xl font-semibold text-foreground">
-                    Welcome to Abdl Chat Bot
-                  </h2>
-                  <p className="max-w-md text-muted-foreground">
-                    Start a conversation by typing a message below. I'm here to help with general
-                    questions and friendly conversation.
-                  </p>
-                </div>
-              )}
-              {messages.map((message) => (
-                <ChatMessage key={message.id} message={message} />
-              ))}
-              {sendMessageMutation.isPending && (
-                <div className="flex items-start gap-3">
-                  <img
-                    src="/assets/generated/abdl-chat-bot-avatar.dim_256x256.png"
-                    alt="Assistant"
-                    className="h-8 w-8 rounded-full"
-                  />
-                  <div className="flex-1 rounded-2xl bg-accent px-4 py-3">
-                    <div className="flex gap-1">
-                      <div className="h-2 w-2 animate-bounce rounded-full bg-accent-foreground [animation-delay:-0.3s]"></div>
-                      <div className="h-2 w-2 animate-bounce rounded-full bg-accent-foreground [animation-delay:-0.15s]"></div>
-                      <div className="h-2 w-2 animate-bounce rounded-full bg-accent-foreground"></div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          </ScrollArea>
+      {/* Profile Setup Dialog */}
+      {showProfileSetup && <ProfileSetupDialog />}
 
-          {/* Error Display */}
-          {error && (
-            <Alert variant="destructive" className="mb-4">
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
+      {/* Main Content */}
+      <main className="container mx-auto flex flex-1 overflow-hidden px-4 py-6">
+        <div className="flex w-full gap-6">
+          {/* Chat History Sidebar */}
+          {isAuthenticated && (
+            <ChatHistoryPanel
+              chats={chats}
+              selectedChatId={selectedChatId}
+              onSelectChat={handleSelectChat}
+              onNewChat={handleNewChat}
+              onDeleteChat={handleDeleteChat}
+            />
           )}
 
-          {/* Composer */}
-          <div className="mt-4">
-            <ChatComposer
-              onSend={handleSend}
-              disabled={sendMessageMutation.isPending || !actor}
-            />
-          </div>
+          {/* Chat Area */}
+          <div className="flex flex-1 flex-col">
+            <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col">
+              {/* Messages */}
+              <ScrollArea className="flex-1 pr-4">
+                <div className="space-y-6 pb-6">
+                  {localMessages.length === 0 && (
+                    <div className="flex flex-col items-center justify-center py-12 text-center">
+                      <img
+                        src="/assets/generated/abdl-chat-bot-avatar.dim_256x256.png"
+                        alt="Assistant"
+                        className="mb-6 h-24 w-24 rounded-full"
+                      />
+                      <h2 className="mb-2 text-2xl font-semibold text-foreground">
+                        Welcome to Abdl Chat Bot
+                      </h2>
+                      <p className="max-w-md text-muted-foreground">
+                        Start a conversation by typing a message below. I'm here to help with general
+                        questions and friendly conversation.
+                      </p>
+                    </div>
+                  )}
+                  {localMessages.map((message) => (
+                    <ChatMessage key={message.id} message={message} />
+                  ))}
+                  {sendMessageMutation.isPending && (
+                    <div className="flex items-start gap-3">
+                      <img
+                        src="/assets/generated/abdl-chat-bot-avatar.dim_256x256.png"
+                        alt="Assistant"
+                        className="h-8 w-8 rounded-full"
+                      />
+                      <div className="flex-1 rounded-2xl bg-accent px-4 py-3">
+                        <div className="flex gap-1">
+                          <div className="h-2 w-2 animate-bounce rounded-full bg-accent-foreground [animation-delay:-0.3s]"></div>
+                          <div className="h-2 w-2 animate-bounce rounded-full bg-accent-foreground [animation-delay:-0.15s]"></div>
+                          <div className="h-2 w-2 animate-bounce rounded-full bg-accent-foreground"></div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </ScrollArea>
 
-          {/* Developer Note */}
-          <div className="mt-4">
-            <DeveloperSafetyNote />
+              {/* Error Display */}
+              {error && (
+                <Alert variant="destructive" className="mb-4">
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+
+              {/* Composer */}
+              <div className="mt-4">
+                <ChatComposer
+                  onSend={handleSend}
+                  disabled={sendMessageMutation.isPending || !actor}
+                />
+              </div>
+
+              {/* Developer Note */}
+              <div className="mt-4">
+                <DeveloperSafetyNote />
+              </div>
+            </div>
           </div>
         </div>
       </main>
