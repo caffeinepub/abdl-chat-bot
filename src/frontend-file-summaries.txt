@@ -1,18 +1,19 @@
 {
-  "frontend/src/App.tsx": "Main application component with authentication, multi-chat management, chat history sidebar, auto-save functionality, and profile setup integration.",
-  "frontend/src/components/ChatMessage.tsx": "Reusable chat message component that displays user and assistant messages with distinct styling and avatars using UIMessage type.",
-  "frontend/src/components/ChatComposer.tsx": "Chat input component with textarea and send button, supporting Enter to send and Shift+Enter for new lines.",
+  "frontend/src/App.tsx": "Main application component with mobile-responsive layout, adaptive header with wrapping actions, and integration with ResponsiveChatHistory for authenticated users.",
+  "frontend/src/components/ChatMessage.tsx": "Chat message component with responsive avatar and bubble sizing that scales appropriately for mobile and desktop screens.",
+  "frontend/src/components/ChatComposer.tsx": "Chat input component with mobile-optimized sizing (52px on mobile, 60px on desktop) and touch-friendly send button.",
   "frontend/src/components/SafetyUsage.tsx": "Safety and usage guidelines dialog content explaining content policies, request refusals, and acceptable use cases.",
   "frontend/src/components/DeveloperSafetyNote.tsx": "Collapsible developer warning about API key exposure and security best practices for handling secrets.",
-  "frontend/src/index.css": "Global styles with warm neutral color palette and teal/green accent using OKLCH color system for both light and dark modes.",
+  "frontend/src/index.css": "Global styles with OKLCH color system and mobile-safe utility classes including safe-area padding support.",
   "frontend/tailwind.config.js": "Tailwind configuration with custom color tokens, Inter font family, and extended design system utilities.",
   "frontend/src/hooks/useQueries.ts": "React Query hook for sending messages to the backend chatbot endpoint.",
-  "frontend/src/components/AuthButton.tsx": "Authentication button component that handles Internet Identity sign-in/sign-out with loading states.",
+  "frontend/src/components/AuthButton.tsx": "Authentication button with mobile-friendly touch targets (min 44px), icon-only display on small screens, and full label on desktop.",
   "frontend/src/components/ProfileSetupDialog.tsx": "Modal dialog for first-time user profile setup that prompts for name and saves to backend.",
-  "frontend/src/components/ChatHistoryPanel.tsx": "Sidebar panel displaying chat list with selection, creation, and deletion functionality including confirmation dialog.",
+  "frontend/src/components/ChatHistoryPanel.tsx": "Chat history sidebar panel with touch-friendly tap targets (min 44px height), visible delete buttons on mobile, and responsive dialog sizing.",
   "frontend/src/hooks/useCurrentUserProfile.ts": "React Query hook for fetching the current user's profile with proper loading state management to prevent UI flashing.",
   "frontend/src/hooks/useChats.ts": "React Query hooks for managing chats including listing, fetching, creating, deleting, and adding messages to chats.",
   "frontend/src/hooks/useChatAutosave.ts": "Custom hook that handles auto-save logic for both authenticated (backend) and anonymous (local storage) users with restore functionality.",
   "frontend/src/utils/chatLocalStore.ts": "Local storage utility functions for persisting anonymous user chats with versioning and safe JSON parsing.",
-  "frontend/src/types/chat.ts": "TypeScript type definitions for UI message structure used across chat components."
+  "frontend/src/types/chat.ts": "TypeScript type definitions for UI message structure used across chat components.",
+  "frontend/src/components/ResponsiveChatHistory.tsx": "Wrapper component that renders ChatHistoryPanel as a persistent sidebar on desktop (lg+) and a mobile drawer/sheet with floating menu button on smaller screens."
 }

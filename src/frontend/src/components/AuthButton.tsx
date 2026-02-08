@@ -35,18 +35,19 @@ export function AuthButton({ onLogout }: AuthButtonProps) {
       disabled={isLoggingIn}
       variant={isAuthenticated ? 'outline' : 'default'}
       size="sm"
+      className="h-10 min-w-[44px]"
     >
       {isLoggingIn ? (
-        'Signing in...'
+        <span className="text-sm">Signing in...</span>
       ) : isAuthenticated ? (
         <>
-          <LogOut className="mr-2 h-4 w-4" />
-          Sign out
+          <LogOut className="h-4 w-4 sm:mr-2" />
+          <span className="hidden sm:inline">Sign Out</span>
         </>
       ) : (
         <>
-          <LogIn className="mr-2 h-4 w-4" />
-          Sign in
+          <LogIn className="h-4 w-4 sm:mr-2" />
+          <span className="hidden sm:inline">Sign In</span>
         </>
       )}
     </Button>

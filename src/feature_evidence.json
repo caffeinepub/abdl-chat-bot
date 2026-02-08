@@ -2,13 +2,34 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-add-internet-identity-login-logout-ui-so-users-can-login-signup-and-the-app-clearly-reflects-whether-the-user-is-authenticated",
-      "featureTitle": "Add Internet Identity login/logout UI so users can \"login/signup\" and the app clearly reflects whether the user is authenticated.",
+      "featureId": "feature-make-the-main-layout-responsive-so-the-chat-experience-is-fully-usable-on-phones-and-tablets-including-proper-handling-of-the-authenticated-chat-history-panel",
+      "featureTitle": "Make the main layout responsive so the chat experience is fully usable on phones and tablets, including proper handling of the authenticated chat history panel.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/ChatHistoryPanel.tsx",
+        "frontend/src/components/ResponsiveChatHistory.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-12"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-improve-mobile-ergonomics-and-accessibility-for-touch-devices-across-the-chat-ui-composer-buttons-dialogs",
+      "featureTitle": "Improve mobile ergonomics and accessibility for touch devices across the chat UI (composer, buttons, dialogs).",
       "files": [
         "frontend/src/App.tsx",
         "frontend/src/components/AuthButton.tsx",
-        "frontend/src/components/ProfileSetupDialog.tsx",
-        "frontend/src/hooks/useCurrentUserProfile.ts"
+        "frontend/src/components/ChatComposer.tsx",
+        "frontend/src/components/ChatHistoryPanel.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -19,17 +40,17 @@
         "authorization@4.0.0"
       ],
       "testIds": [
-        "REQ-7"
+        "REQ-13"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-implement-chat-history-tabs-list-ui-similar-to-chatgpt-that-allows-switching-between-multiple-past-conversations-for-the-current-user",
-      "featureTitle": "Implement chat history tabs/list UI (similar to ChatGPT) that allows switching between multiple past conversations for the current user.",
+      "featureId": "feature-ensure-the-ui-uses-mobile-safe-sizing-and-spacing-throughout-the-main-containers-header-main-footer-and-chat-area-widths",
+      "featureTitle": "Ensure the UI uses mobile-safe sizing and spacing throughout the main containers (header/main/footer) and chat area widths.",
       "files": [
         "frontend/src/App.tsx",
-        "frontend/src/components/ChatHistoryPanel.tsx",
-        "frontend/src/hooks/useChats.ts"
+        "frontend/src/components/ChatMessage.tsx",
+        "frontend/src/index.css"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -40,49 +61,7 @@
         "authorization@4.0.0"
       ],
       "testIds": [
-        "REQ-8"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-add-automatic-saving-and-restoring-of-chats-so-conversation-state-persists-across-refresh-and-can-be-restored-later-with-behavior-dependent-on-authentication-state",
-      "featureTitle": "Add automatic saving and restoring of chats so conversation state persists across refresh and can be restored later, with behavior dependent on authentication state.",
-      "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/hooks/useChatAutosave.ts",
-        "frontend/src/utils/chatLocalStore.ts"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "authorization@4.0.0"
-      ],
-      "testIds": [
-        "REQ-9"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-refactor-the-existing-single-chat-in-memory-state-in-the-main-chat-screen-to-support-multi-chat-selection-and-persistence-while-keeping-existing-safety-usage-and-developer-safety-note-ui-intact",
-      "featureTitle": "Refactor the existing single-chat in-memory state in the main chat screen to support multi-chat selection and persistence while keeping existing Safety & Usage and Developer Safety Note UI intact.",
-      "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/components/ChatHistoryPanel.tsx",
-        "frontend/src/types/chat.ts"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "authorization@4.0.0"
-      ],
-      "testIds": [
-        "REQ-11"
+        "REQ-14"
       ],
       "confidence": "high"
     }

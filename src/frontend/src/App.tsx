@@ -8,7 +8,7 @@ import { SafetyUsage } from './components/SafetyUsage';
 import { DeveloperSafetyNote } from './components/DeveloperSafetyNote';
 import { AuthButton } from './components/AuthButton';
 import { ProfileSetupDialog } from './components/ProfileSetupDialog';
-import { ChatHistoryPanel } from './components/ChatHistoryPanel';
+import { ResponsiveChatHistory } from './components/ResponsiveChatHistory';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -176,35 +176,35 @@ function App() {
     <div className="flex min-h-screen flex-col bg-background">
       {/* Header */}
       <header className="border-b border-border bg-card">
-        <div className="container mx-auto flex items-center justify-between px-4 py-4">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-3 py-3 sm:px-4 sm:py-4">
           <div className="flex items-center gap-3">
             <img
               src="/assets/generated/abdl-chat-bot-logo.dim_512x512.png"
               alt="Abdl Chat Bot"
-              className="h-10 w-auto"
+              className="h-8 w-auto sm:h-10"
             />
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             {isAuthenticated && userProfile && (
-              <span className="text-sm text-muted-foreground">
+              <span className="hidden text-sm text-muted-foreground sm:inline">
                 Signed in as <span className="font-medium text-foreground">{userProfile.name}</span>
               </span>
             )}
             <Dialog>
               <DialogTrigger asChild>
-                <Button variant="outline" size="sm">
-                  <Info className="mr-2 h-4 w-4" />
-                  Safety & Usage
+                <Button variant="outline" size="sm" className="h-10 min-w-[44px]">
+                  <Info className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Safety & Usage</span>
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-2xl">
+              <DialogContent className="max-h-[90vh] max-w-[95vw] overflow-y-auto sm:max-h-[85vh] sm:max-w-2xl">
                 <SafetyUsage />
               </DialogContent>
             </Dialog>
             {localMessages.length > 0 && (
-              <Button variant="outline" size="sm" onClick={handleClearChat}>
-                <Trash2 className="mr-2 h-4 w-4" />
-                Clear Chat
+              <Button variant="outline" size="sm" onClick={handleClearChat} className="h-10 min-w-[44px]">
+                <Trash2 className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Clear Chat</span>
               </Button>
             )}
             <AuthButton onLogout={handleLogout} />
@@ -216,11 +216,11 @@ function App() {
       {showProfileSetup && <ProfileSetupDialog />}
 
       {/* Main Content */}
-      <main className="container mx-auto flex flex-1 overflow-hidden px-4 py-6">
-        <div className="flex w-full gap-6">
-          {/* Chat History Sidebar */}
+      <main className="flex flex-1 overflow-hidden">
+        <div className="flex w-full">
+          {/* Chat History - Responsive */}
           {isAuthenticated && (
-            <ChatHistoryPanel
+            <ResponsiveChatHistory
               chats={chats}
               selectedChatId={selectedChatId}
               onSelectChat={handleSelectChat}
@@ -230,22 +230,22 @@ function App() {
           )}
 
           {/* Chat Area */}
-          <div className="flex flex-1 flex-col">
+          <div className="flex flex-1 flex-col px-3 py-4 sm:px-4 sm:py-6">
             <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col">
               {/* Messages */}
-              <ScrollArea className="flex-1 pr-4">
-                <div className="space-y-6 pb-6">
+              <ScrollArea className="flex-1 pr-2 sm:pr-4">
+                <div className="space-y-4 pb-4 sm:space-y-6 sm:pb-6">
                   {localMessages.length === 0 && (
-                    <div className="flex flex-col items-center justify-center py-12 text-center">
+                    <div className="flex flex-col items-center justify-center py-8 text-center sm:py-12">
                       <img
                         src="/assets/generated/abdl-chat-bot-avatar.dim_256x256.png"
                         alt="Assistant"
-                        className="mb-6 h-24 w-24 rounded-full"
+                        className="mb-4 h-16 w-16 rounded-full sm:mb-6 sm:h-24 sm:w-24"
                       />
-                      <h2 className="mb-2 text-2xl font-semibold text-foreground">
+                      <h2 className="mb-2 text-xl font-semibold text-foreground sm:text-2xl">
                         Welcome to Abdl Chat Bot
                       </h2>
-                      <p className="max-w-md text-muted-foreground">
+                      <p className="max-w-md px-4 text-sm text-muted-foreground sm:text-base">
                         Start a conversation by typing a message below. I'm here to help with general
                         questions and friendly conversation.
                       </p>
@@ -255,13 +255,13 @@ function App() {
                     <ChatMessage key={message.id} message={message} />
                   ))}
                   {sendMessageMutation.isPending && (
-                    <div className="flex items-start gap-3">
+                    <div className="flex items-start gap-2 sm:gap-3">
                       <img
                         src="/assets/generated/abdl-chat-bot-avatar.dim_256x256.png"
                         alt="Assistant"
-                        className="h-8 w-8 rounded-full"
+                        className="h-7 w-7 rounded-full sm:h-8 sm:w-8"
                       />
-                      <div className="flex-1 rounded-2xl bg-accent px-4 py-3">
+                      <div className="flex-1 rounded-2xl bg-accent px-3 py-2 sm:px-4 sm:py-3">
                         <div className="flex gap-1">
                           <div className="h-2 w-2 animate-bounce rounded-full bg-accent-foreground [animation-delay:-0.3s]"></div>
                           <div className="h-2 w-2 animate-bounce rounded-full bg-accent-foreground [animation-delay:-0.15s]"></div>
@@ -275,13 +275,13 @@ function App() {
 
               {/* Error Display */}
               {error && (
-                <Alert variant="destructive" className="mb-4">
-                  <AlertDescription>{error}</AlertDescription>
+                <Alert variant="destructive" className="mb-3 sm:mb-4">
+                  <AlertDescription className="text-sm">{error}</AlertDescription>
                 </Alert>
               )}
 
               {/* Composer */}
-              <div className="mt-4">
+              <div className="mt-3 sm:mt-4">
                 <ChatComposer
                   onSend={handleSend}
                   disabled={sendMessageMutation.isPending || !actor}
@@ -289,7 +289,7 @@ function App() {
               </div>
 
               {/* Developer Note */}
-              <div className="mt-4">
+              <div className="mt-3 sm:mt-4">
                 <DeveloperSafetyNote />
               </div>
             </div>
@@ -298,8 +298,8 @@ function App() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-border bg-card py-4">
-        <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
+      <footer className="border-t border-border bg-card py-3 sm:py-4">
+        <div className="mx-auto max-w-7xl px-3 text-center text-xs text-muted-foreground sm:px-4 sm:text-sm">
           © 2026. Built with ❤️ using{' '}
           <a
             href="https://caffeine.ai"

@@ -33,14 +33,14 @@ export function ChatComposer({ onSend, disabled = false }: ChatComposerProps) {
         onKeyDown={handleKeyDown}
         placeholder="Type your message... (Press Enter to send, Shift+Enter for new line)"
         disabled={disabled}
-        className="min-h-[60px] resize-none"
+        className="min-h-[52px] resize-none text-base sm:min-h-[60px]"
         rows={2}
       />
       <Button
         onClick={handleSend}
         disabled={disabled || !message.trim()}
         size="icon"
-        className="h-[60px] w-[60px] shrink-0"
+        className="h-[52px] w-[52px] shrink-0 sm:h-[60px] sm:w-[60px]"
       >
         <Send className="h-5 w-5" />
       </Button>

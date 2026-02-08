@@ -1,112 +1,76 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-08T01:21:42.731Z",
+  "generatedAt": "2026-02-08T01:29:19.173Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 5,
-    "implemented": 4,
+    "total": 3,
+    "implemented": 3,
     "items": [
       {
-        "id": "REQ-10",
-        "summary": "Extend the Motoko backend to support per-user chat persistence needed for chat history: create/list/get/update/delete chats, scoped to the authenticated caller principal.",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-11",
-        "summary": "Refactor the existing single-chat in-memory state in the main chat screen to support multi-chat selection and persistence while keeping existing Safety & Usage and Developer Safety Note UI intact.",
+        "id": "REQ-12",
+        "summary": "Make the main layout responsive so the chat experience is fully usable on phones and tablets, including proper handling of the authenticated chat history panel.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/types/chat.ts",
           "frontend/src/App.tsx",
-          "frontend/src/components/ChatHistoryPanel.tsx"
+          "frontend/src/components/ChatHistoryPanel.tsx",
+          "frontend/src/components/ResponsiveChatHistory.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/types/chat.ts",
           "frontend/src/App.tsx",
-          "frontend/src/components/ChatHistoryPanel.tsx"
-        ]
-      },
-      {
-        "id": "REQ-7",
-        "summary": "Add Internet Identity login/logout UI so users can \"login/signup\" and the app clearly reflects whether the user is authenticated.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/AuthButton.tsx",
-          "frontend/src/components/ProfileSetupDialog.tsx",
-          "frontend/src/hooks/useCurrentUserProfile.ts",
-          "frontend/src/App.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/AuthButton.tsx",
-          "frontend/src/components/ProfileSetupDialog.tsx",
-          "frontend/src/hooks/useCurrentUserProfile.ts",
-          "frontend/src/App.tsx"
-        ]
-      },
-      {
-        "id": "REQ-8",
-        "summary": "Implement chat history tabs/list UI (similar to ChatGPT) that allows switching between multiple past conversations for the current user.",
-        "status": "implemented",
-        "plannedFiles": [
           "frontend/src/components/ChatHistoryPanel.tsx",
-          "frontend/src/hooks/useChats.ts",
+          "frontend/src/components/ResponsiveChatHistory.tsx"
+        ]
+      },
+      {
+        "id": "REQ-13",
+        "summary": "Improve mobile ergonomics and accessibility for touch devices across the chat UI (composer, buttons, dialogs).",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/ChatComposer.tsx",
+          "frontend/src/components/AuthButton.tsx",
+          "frontend/src/components/ChatHistoryPanel.tsx",
           "frontend/src/App.tsx"
         ],
         "matchedFiles": [
+          "frontend/src/components/ChatComposer.tsx",
+          "frontend/src/components/AuthButton.tsx",
           "frontend/src/components/ChatHistoryPanel.tsx",
-          "frontend/src/hooks/useChats.ts",
           "frontend/src/App.tsx"
         ]
       },
       {
-        "id": "REQ-9",
-        "summary": "Add automatic saving and restoring of chats so conversation state persists across refresh and can be restored later, with behavior dependent on authentication state.",
+        "id": "REQ-14",
+        "summary": "Ensure the UI uses mobile-safe sizing and spacing throughout the main containers (header/main/footer) and chat area widths.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/utils/chatLocalStore.ts",
-          "frontend/src/hooks/useChatAutosave.ts",
-          "frontend/src/App.tsx"
+          "frontend/src/App.tsx",
+          "frontend/src/components/ChatMessage.tsx",
+          "frontend/src/index.css"
         ],
         "matchedFiles": [
-          "frontend/src/utils/chatLocalStore.ts",
-          "frontend/src/hooks/useChatAutosave.ts",
-          "frontend/src/App.tsx"
+          "frontend/src/App.tsx",
+          "frontend/src/components/ChatMessage.tsx",
+          "frontend/src/index.css"
         ]
       }
     ]
   },
   "changedFiles": [
-    "backend/authorization/MixinAuthorization.mo",
-    "backend/authorization/access-control.mo",
-    "backend/main.mo",
     "build-request.json",
-    "build-template/README.md",
-    "caffeine.lock.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
     "frontend/src/App.tsx",
-    "frontend/src/backend.d.ts",
-    "frontend/src/backend.ts",
     "frontend/src/components/AuthButton.tsx",
+    "frontend/src/components/ChatComposer.tsx",
     "frontend/src/components/ChatHistoryPanel.tsx",
     "frontend/src/components/ChatMessage.tsx",
-    "frontend/src/components/ProfileSetupDialog.tsx",
-    "frontend/src/declarations/backend.did.d.ts",
-    "frontend/src/declarations/backend.did.js",
-    "frontend/src/hooks/useActor.ts",
-    "frontend/src/hooks/useChatAutosave.ts",
-    "frontend/src/hooks/useChats.ts",
-    "frontend/src/hooks/useCurrentUserProfile.ts",
-    "frontend/src/types/chat.ts",
-    "frontend/src/utils/chatLocalStore.ts",
-    "frontend/src/utils/urlParams.ts",
+    "frontend/src/components/ResponsiveChatHistory.tsx",
+    "frontend/src/index.css",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

@@ -1,118 +1,89 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Authentication UI, multi-chat history, and auto-save persistence",
+  "title": "Responsive, touch-friendly mobile chatbot UI",
   "requirements": [
     {
-      "id": "REQ-7",
-      "summary": "Add Internet Identity login/logout UI and authenticated state indicator (English) using existing InternetIdentityProvider.",
+      "id": "REQ-12",
+      "summary": "Make the main chat layout responsive with a mobile toggle for the authenticated chat history panel and mobile-safe header actions.",
       "acceptanceCriteria": [
-        "A \"Sign in\" (or equivalent) action is visible when the user is not authenticated and triggers Internet Identity login via the existing InternetIdentityProvider.",
-        "A \"Sign out\" action is visible when the user is authenticated and logs the user out via the existing Internet Identity hook.",
-        "The UI displays an authenticated state indicator (e.g., \"Signed in\") and does not expose any secrets or API keys.",
-        "All user-facing authentication text is in English."
+        "On small screens (e.g., 320–480px wide), the app content fits without horizontal scrolling.",
+        "When authenticated, the chat history sidebar does not permanently consume screen width on mobile; it is hidden behind a toggle (e.g., drawer/sheet) or collapses, and the user can still create/select/delete chats from it.",
+        "Header actions (Safety & Usage, Clear Chat when present, Sign in/out) remain reachable on mobile (wrap to multiple lines or move into an overflow menu) without overlapping/clipping.",
+        "The messages list and composer remain usable on mobile: messages area scrolls independently and the composer stays accessible at the bottom without being pushed off-screen."
       ],
       "file_operations": [
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Refactor the page layout to be mobile-first: replace rigid container usage with responsive max-width + adaptive horizontal padding, enable header action wrapping/stacking on small screens, and wire an authenticated-only mobile chat-history toggle. Use shadcn-ui primitives already in the app (e.g., Dialog, Button, ScrollArea) to implement a drawer/sheet-style chat history experience on mobile while keeping the desktop sidebar on larger breakpoints. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/ChatHistoryPanel.tsx",
+          "operation": "modify",
+          "description": "Make the chat history panel render correctly in both desktop sidebar and mobile drawer contexts: remove/parameterize fixed width assumptions (e.g., w-64), add responsive sizing classes, and ensure create/select/delete affordances remain available when used inside a mobile overlay. Keep existing behaviors intact and continue composing shadcn-ui components without editing frontend/src/components/ui. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/ResponsiveChatHistory.tsx",
+          "operation": "create",
+          "description": "Create a small wrapper component that renders ChatHistoryPanel as (1) a persistent sidebar on larger screens and (2) a mobile overlay (drawer/sheet pattern) behind a toggle on small screens. This component should expose props for chats/selection/new/delete and integrate with App header toggle wiring. Use shadcn-ui Dialog (or other existing overlay primitive available in the project) for the mobile overlay implementation. Verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-13",
+      "summary": "Improve touch ergonomics and mobile accessibility across the chat UI (composer, buttons, and dialogs).",
+      "acceptanceCriteria": [
+        "Primary interactive targets used frequently on mobile (send button, new chat, chat row tap area, sign in/out) meet a touch-friendly minimum size and spacing (at least ~44px tap target).",
+        "Text input is comfortable on mobile: the textarea and send button do not overflow the viewport and remain visible when the on-screen keyboard is open.",
+        "Dialogs (e.g., Safety & Usage, delete chat confirmation) render within the viewport on mobile with scrollable content when needed, and no content is cut off."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/ChatComposer.tsx",
+          "operation": "modify",
+          "description": "Adjust the composer layout for mobile ergonomics: ensure textarea and send button remain within viewport width, increase/confirm touch target sizing (>= ~44px), and add mobile-safe behavior so the composer remains accessible near the bottom (including safe-area padding) without layout overflow. Continue composing existing shadcn-ui Textarea/Button components (do not edit frontend/src/components/ui). Verify the component's usage instructions before implementing."
+        },
         {
           "path": "frontend/src/components/AuthButton.tsx",
-          "operation": "create",
-          "description": "Create a header authentication control that uses the existing immutable `useInternetIdentity` hook to trigger Internet Identity sign-in/sign-out and shows an authenticated state label. Use shadcn-ui `Button` for consistent styling. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/components/ProfileSetupDialog.tsx",
-          "operation": "create",
-          "description": "Create a first-login profile setup dialog (name only) that calls backend `getCallerUserProfile`/`saveCallerUserProfile` via the actor and avoids displaying the principal id. Use shadcn-ui `Dialog`, `Input`, and `Button` components. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/hooks/useCurrentUserProfile.ts",
-          "operation": "create",
-          "description": "Add a React Query hook that fetches the current user's profile from the actor (returns null when absent) and exposes loading/fetched state to prevent UI flashing during actor initialization."
-        },
-        {
-          "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Wire `AuthButton` into the existing header (no new routes) and display a simple authenticated indicator (e.g., \"Signed in as <name>\") sourced from `useCurrentUserProfile`. Also trigger `ProfileSetupDialog` only when authenticated and the profile is missing. Keep existing Safety & Usage and DeveloperSafetyNote UI intact. Verify the component's usage instructions before implementing."
-        }
-      ]
-    },
-    {
-      "id": "REQ-8",
-      "summary": "Implement a ChatGPT-like conversation list UI to create, switch, and delete past chats in the current user context.",
-      "acceptanceCriteria": [
-        "The app shows a conversation list (tabs/sidebar/list) containing previously created chats for the current user context.",
-        "The user can create a new chat and switch between chats without losing data.",
-        "The user can delete a chat from history (with a basic confirmation to prevent accidental deletion).",
-        "Switching chats updates the message list to the selected conversation’s messages."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/ChatHistoryPanel.tsx",
-          "operation": "create",
-          "description": "Create a conversation list panel (sidebar/list) that renders chat summaries, supports selecting an active chat, creating a new chat, and deleting a chat with confirmation. Use shadcn-ui components such as `ScrollArea`, `Button`, and `AlertDialog` for confirmation UI. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/hooks/useChats.ts",
-          "operation": "create",
-          "description": "Add React Query hooks for listing chats and fetching a selected chat when authenticated (actor `getUserChats`, `getChat`) and for creating/deleting chats (actor `createChat`, `deleteChat`). Ensure queries are keyed per-identity via existing actor behavior and can be cleared on logout by relying on QueryClient clearing."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Refactor the layout to include `ChatHistoryPanel` alongside the message area, manage `selectedChatId` state, and update the rendered message list to match the selected conversation. Ensure create/switch/delete interactions update the UI without losing in-memory message edits during normal use. Verify the component's usage instructions before implementing."
-        }
-      ]
-    },
-    {
-      "id": "REQ-9",
-      "summary": "Auto-save and restore chats across refresh with behavior depending on authentication state (backend persistence when signed in, local persistence when anonymous).",
-      "acceptanceCriteria": [
-        "When authenticated, chats are persisted to the backend and are restored after refresh and after logging back in.",
-        "When not authenticated, the current chat is auto-saved locally (e.g., browser storage) and restored after refresh for the same browser.",
-        "Auto-save happens automatically on send and when assistant replies are received; users do not need to click a save button.",
-        "No data loss occurs when refreshing the page during normal use (excluding in-flight requests)."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/utils/chatLocalStore.ts",
-          "operation": "create",
-          "description": "Implement local (anonymous) chat persistence helpers using browser storage: store chat list, per-chat messages, selected chat id, and timestamps; include safe JSON parsing and versioning to avoid crashes on malformed data."
-        },
-        {
-          "path": "frontend/src/hooks/useChatAutosave.ts",
-          "operation": "create",
-          "description": "Create a hook that exposes `persistOnUserSend` and `persistOnAssistantReply` behaviors. When authenticated, append messages to the selected chat via actor `addMessage` (and create a chat if needed). When anonymous, write changes through `chatLocalStore`. Also expose `restoreOnLoad` behavior to hydrate initial state from backend (authenticated) or local storage (anonymous)."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Integrate `useChatAutosave` so that: (1) on initial mount/actor readiness it restores chats and the active conversation; (2) on send it immediately updates UI and persists automatically; (3) on assistant reply it persists automatically; and (4) on logout it falls back to anonymous local persistence and clears any authenticated cached data in UI state (no secrets or API keys). Verify the component's usage instructions before implementing."
-        }
-      ]
-    },
-    {
-      "id": "REQ-11",
-      "summary": "Refactor the main chat screen from single in-memory conversation to multi-chat selection + persistence, preserving Safety & Usage and DeveloperSafetyNote UI and error/loading behavior.",
-      "acceptanceCriteria": [
-        "The existing Safety & Usage dialog remains accessible and unchanged in meaning.",
-        "The existing DeveloperSafetyNote remains visible and unchanged in meaning.",
-        "The existing \"Clear Chat\" behavior is updated to clear the currently selected conversation (not all conversations) and remains visible only when there is content to clear.",
-        "The app continues to show loading and error states for sending messages, and errors are displayed in English."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/types/chat.ts",
-          "operation": "create",
-          "description": "Define shared frontend chat types for UI state (conversation, message view model) and mapping helpers from backend `ChatView/Message` to UI message shape, without leaking principals into UI."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Replace the single `messages` state with multi-chat state keyed by conversation id, driven by the selected conversation. Update \"Clear Chat\" to clear only the active conversation: for authenticated users, clear by deleting the active chat and immediately creating/selecting a replacement empty chat; for anonymous users, clear by removing messages for the active local chat. Keep Safety & Usage dialog and DeveloperSafetyNote placement/content unchanged, and maintain pending/loading indicator and English error messaging for send failures. Verify the component's usage instructions before implementing."
+          "description": "Make sign in/out touch targets mobile-friendly: increase minimum height/padding on small screens, ensure label/icon layout does not clip when header wraps, and preserve existing Internet Identity behavior. Continue using the shadcn-ui Button component via composition only. Verify the component's usage instructions before implementing."
         },
         {
           "path": "frontend/src/components/ChatHistoryPanel.tsx",
           "operation": "modify",
-          "description": "Ensure the panel reflects selection state, disables destructive actions during in-flight operations, and surfaces basic errors in English (e.g., delete failure) without breaking the main chat UI. Verify the component's usage instructions before implementing."
+          "description": "Improve touch targets in the chat list: make each chat row a larger tap area (min height/vertical padding), ensure the delete button is reachable on touch devices (not hover-only on mobile), and constrain dialog sizing so the delete confirmation fits the viewport with scroll if needed (via shadcn-ui AlertDialog composition). Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Update dialog presentation for mobile: Safety & Usage dialog content should fit within the viewport with a max height and internal scrolling when needed, and header action layout should avoid overlap/clipping when wrapped. Use shadcn-ui DialogContent classes (composition only) to achieve mobile-safe sizing. Verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-14",
+      "summary": "Use mobile-safe sizing/spacing throughout header/main/footer and chat area widths, including message bubble/avatar scaling on small screens.",
+      "acceptanceCriteria": [
+        "The main chat column max width and padding adapt to small screens (reduced side padding, no forced max-width that causes cramped layout).",
+        "The chat message bubbles and avatars scale appropriately on mobile (no clipped avatars, no unreadably small text).",
+        "No fixed-width container (e.g., the chat history panel width) causes layout breakage on narrow screens."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Tune overall page sizing: adopt responsive paddings for header/main/footer, reduce side padding on small screens, and adjust the chat column max width behavior so it uses the full available width on phones while retaining a comfortable max width on desktop. Ensure no horizontal scrolling occurs at ~320px widths."
+        },
+        {
+          "path": "frontend/src/components/ChatMessage.tsx",
+          "operation": "modify",
+          "description": "Adjust message row layout for small screens: ensure avatar and bubble spacing scales down gracefully, add min-width/overflow protections to prevent layout overflow, and ensure text remains readable on mobile (responsive font sizes/line heights) while keeping existing styling/role colors. Continue composing shadcn-ui Avatar primitives without editing frontend/src/components/ui. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/index.css",
+          "operation": "modify",
+          "description": "Add small, global mobile-safe utilities (e.g., safe-area bottom padding helper for sticky bottom UI, optional global overflow-x prevention) using the existing Tailwind/global stylesheet entry point. Keep changes minimal and compatible with the existing theme variables."
         }
       ]
     }

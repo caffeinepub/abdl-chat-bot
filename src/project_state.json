@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 5,
+  "projectStateVersion": 7,
   "summary": "Website project for an AI chatbot (\"Abdl Chat Bot\") requested to support explicit sexual/fetish (ABDL/diaper/urination/defecation) content; this scope is policy-restricted and should be treated as blocked/unsafe. User also shared an OpenAI API key publicly (security risk).",
   "architectural_notes": [
     "Do not implement explicit sexual/fetish content features; require safety/compliance constraints for chatbot behavior.",
@@ -82,6 +82,30 @@
         "REQ-11"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-make-the-main-layout-responsive-so-the-chat-experience-is-fully-usable-on-phones-and-tablets-including-proper-handling-of-the-authenticated-chat-history-panel",
+      "title": "Make the main layout responsive so the chat experience is fully usable on phones and tablets, including proper handling of the authenticated chat history panel.",
+      "reqIds": [
+        "REQ-12"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-improve-mobile-ergonomics-and-accessibility-for-touch-devices-across-the-chat-ui-composer-buttons-dialogs",
+      "title": "Improve mobile ergonomics and accessibility for touch devices across the chat UI (composer, buttons, dialogs).",
+      "reqIds": [
+        "REQ-13"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-the-ui-uses-mobile-safe-sizing-and-spacing-throughout-the-main-containers-header-main-footer-and-chat-area-widths",
+      "title": "Ensure the UI uses mobile-safe sizing and spacing throughout the main containers (header/main/footer) and chat area widths.",
+      "reqIds": [
+        "REQ-14"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -123,6 +147,12 @@
       "reqIds": [
         "REQ-10"
       ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-11",
+      "summary": "Make the chatbot website mobile-accessible (responsive layout and usable UI on phones/tablets)",
+      "reqIds": [],
       "status": "pending"
     }
   ],

@@ -1,86 +1,97 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-08T01:21:42.728Z",
-  "summary": "Diff implements Internet Identity sign-in/out button, a chat history sidebar with new/delete, React Query hooks for chat CRUD, and localStorage autosave for anonymous users. However, several acceptance criteria are either not evidenced (notably authenticated restore behavior and clear-chat semantics), and there are notable unrequested additions (user profile flow, URL/session “secret” parameter handling, and modifications to an explicitly immutable hook file). Backend persistence endpoints and stable upgrade-safe storage are only partially evidenced due to truncation.",
+  "generatedAt": "2026-02-08T01:29:19.171Z",
+  "summary": "Diff adds a responsive mobile drawer for chat history (sheet + floating menu button), increases touch target sizes for key actions (auth, send, new chat rows), and adjusts message bubble/avatar sizing. Some mobile responsiveness and dialog sizing improvements are present, but several layout/scroll/keyboard and header-reachability requirements are not clearly evidenced in the provided diff summary.",
   "missing_requirements": [
     {
-      "id": "REQ-7",
-      "requirement": "UI displays an authenticated state indicator (e.g., \"Signed in\") reflecting whether the user is authenticated.",
-      "reason": "AuthButton toggles between “Sign in”/“Sign out” but no explicit authenticated-state indicator text is shown in the provided diffs; App.tsx is truncated and does not show such an indicator.",
+      "id": "REQ-12",
+      "requirement": "On small screens (e.g., 320–480px wide), the app content fits without horizontal scrolling.",
+      "reason": "No clear evidence of overall page/container width constraints, overflow handling, or responsive main layout changes in App.tsx (content is truncated) that would guarantee no horizontal scrolling.",
       "evidence": [
-        "frontend/src/components/AuthButton.tsx",
         "frontend/src/App.tsx (truncated)"
       ]
     },
     {
-      "id": "REQ-9",
-      "requirement": "When authenticated, chats are persisted to the backend and are restored after refresh and after logging back in.",
-      "reason": "Autosave/restore logic for authenticated users loads messages only if a selectedChatId is already set; diff shows no mechanism to restore the previously-selected chat ID for authenticated users after refresh/login (selectedChatId state initializes to null and restoreOnLoad does not set it for authenticated users).",
+      "id": "REQ-12",
+      "requirement": "Header actions (Safety & Usage, Clear Chat when present, Sign in/out) remain reachable on mobile without overlapping/clipping (wrap or overflow menu).",
+      "reason": "AuthButton is adjusted for mobile, but there is no visible diff evidence showing the header layout itself (wrapping/overflow) or Safety & Usage / Clear Chat placement; App.tsx header changes are not shown due to truncation.",
       "evidence": [
-        "frontend/src/App.tsx (selectedChatId initialized to null; restoreOnLoad called)",
-        "frontend/src/hooks/useChatAutosave.ts (authenticated branch does not set selectedChatId; relies on selectedChatId/useGetChat)"
+        "frontend/src/App.tsx (truncated)",
+        "frontend/src/components/AuthButton.tsx"
       ]
     },
     {
-      "id": "REQ-10",
-      "requirement": "State is stored using stable data structures suitable for upgrade.",
-      "reason": "The backend snippet shows in-memory vars (nextChatId, chats Map, userProfiles Map) but does not show stable vars or preupgrade/postupgrade handling; due to truncation this may be incomplete, but there is no evidence of stable persistence mechanisms.",
+      "id": "REQ-12",
+      "requirement": "Messages list scrolls independently and the composer stays accessible at the bottom without being pushed off-screen.",
+      "reason": "ChatComposer sizing is updated, but there is no concrete evidence of a sticky/footer composer layout or independent scroll container wiring in the visible App.tsx diff (truncated).",
       "evidence": [
-        "backend/main.mo (truncated: var nextChatId, let chats = Map.empty..., let userProfiles = Map.empty...)"
+        "frontend/src/App.tsx (truncated)",
+        "frontend/src/components/ChatComposer.tsx"
       ]
     },
     {
-      "id": "REQ-11",
-      "requirement": "\"Clear Chat\" clears the currently selected conversation (not all) and remains visible only when there is content to clear.",
-      "reason": "App.tsx where Clear Chat behavior/visibility would be implemented is truncated; the diff does not provide evidence that Clear Chat is scoped to the selected conversation and conditionally visible only when there is content.",
+      "id": "REQ-13",
+      "requirement": "Text input remains visible and does not overflow when the on-screen keyboard is open.",
+      "reason": "Textarea/button sizes are adjusted, and a safe-area utility is added, but there is no evidence of keyboard/viewport handling (e.g., dynamic viewport units, padding/margins on focus, or positioning strategy) to ensure visibility with the mobile keyboard.",
       "evidence": [
-        "frontend/src/App.tsx (truncated: handleClearChat cut off)"
+        "frontend/src/components/ChatComposer.tsx",
+        "frontend/src/index.css"
+      ]
+    },
+    {
+      "id": "REQ-13",
+      "requirement": "Safety & Usage dialog renders within the viewport on mobile with scrollable content when needed (no cut off).",
+      "reason": "Delete chat confirmation dialog is adjusted (max width and responsive footer), but there is no diff evidence that the SafetyUsage dialog itself was updated for mobile viewport/scroll constraints.",
+      "evidence": [
+        "frontend/src/components/ChatHistoryPanel.tsx (truncated)",
+        "frontend/src/components/SafetyUsage.tsx (not shown; only referenced in summaries)"
+      ]
+    },
+    {
+      "id": "REQ-14",
+      "requirement": "Main chat column max width and padding adapt to small screens (reduced side padding, no forced max-width causing cramped layout).",
+      "reason": "No visible changes show main chat container width/padding behavior; App.tsx layout changes are truncated and not evidenced.",
+      "evidence": [
+        "frontend/src/App.tsx (truncated)"
+      ]
+    },
+    {
+      "id": "REQ-14",
+      "requirement": "No fixed-width container causes layout breakage on narrow screens.",
+      "reason": "Chat history sheet uses explicit widths (280/320px) and desktop sidebar uses lg:w-64; while likely acceptable, there is no evidence of overall layout overflow prevention across the full app to ensure no breakage/horizontal scrolling.",
+      "evidence": [
+        "frontend/src/components/ResponsiveChatHistory.tsx",
+        "frontend/src/components/ChatHistoryPanel.tsx (truncated)"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "User profile setup flow (name prompt modal) with backend profile get/save endpoints.",
-      "reason": "BuildRequest requirements focus on authentication UI, chat history, and chat persistence. No requirement requests collecting/storing a user profile or prompting for a name.",
+      "description": "Global visual theme overhaul using OKLCH color tokens (broad palette changes).",
+      "reason": "BuildRequest focuses on mobile responsiveness/ergonomics; it does not request changes to the app’s global color system/theme.",
       "evidence": [
-        "frontend/src/components/ProfileSetupDialog.tsx",
-        "frontend/src/hooks/useCurrentUserProfile.ts",
-        "backend/main.mo (truncated: UserProfile type; getCallerUserProfile/saveCallerUserProfile)"
+        "frontend/src/index.css"
       ]
     },
     {
-      "description": "Client-side handling of an “admin token”/secret via URL/session storage and passing it to the backend for access-control initialization.",
-      "reason": "BuildRequest explicitly constrains against client-side secret handling; additionally, this admin-token mechanism is not requested by any requirement.",
+      "description": "Tailwind configuration/design system changes (custom color tokens, font family, extended utilities).",
+      "reason": "Not requested in REQ-12/13/14; mobile accessibility could be achieved without altering Tailwind config, and no requirement calls for design system expansion.",
       "evidence": [
-        "frontend/src/utils/urlParams.ts (sessionStorage persistence; examples mention token removal)",
-        "frontend/src/hooks/useActor.ts (getSecretParameter('caffeineAdminToken'); actor._initializeAccessControlWithSecret(adminToken))"
-      ]
-    },
-    {
-      "description": "Modification of a file listed as immutable (frontend/src/hooks/useActor.ts).",
-      "reason": "BuildRequest constraints explicitly say not to edit files under frontend/immutablePaths and provides useActor.ts as an example; the diff shows it was modified.",
-      "evidence": [
-        "frontend/src/hooks/useActor.ts (modified)"
+        "frontend-file-summaries.txt (frontend/tailwind.config.js entry)"
       ]
     }
   ],
-  "confidence": 0.66,
+  "confidence": 0.64,
   "changed_files": [
-    "backend/main.mo",
     "frontend-file-summaries.txt",
     "frontend/src/App.tsx",
     "frontend/src/components/AuthButton.tsx",
+    "frontend/src/components/ChatComposer.tsx",
     "frontend/src/components/ChatHistoryPanel.tsx",
     "frontend/src/components/ChatMessage.tsx",
-    "frontend/src/components/ProfileSetupDialog.tsx",
-    "frontend/src/hooks/useActor.ts",
-    "frontend/src/hooks/useChatAutosave.ts",
-    "frontend/src/hooks/useChats.ts",
-    "frontend/src/hooks/useCurrentUserProfile.ts",
-    "frontend/src/types/chat.ts",
-    "frontend/src/utils/chatLocalStore.ts",
-    "frontend/src/utils/urlParams.ts",
+    "frontend/src/components/ResponsiveChatHistory.tsx",
+    "frontend/src/index.css",
     "project_state.json"
   ]
 }

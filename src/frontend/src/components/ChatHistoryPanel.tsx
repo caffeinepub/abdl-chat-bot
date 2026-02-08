@@ -48,9 +48,9 @@ export function ChatHistoryPanel({
 
   return (
     <>
-      <div className="flex w-64 flex-col border-r border-border bg-card">
-        <div className="border-b border-border p-4">
-          <Button onClick={onNewChat} className="w-full" size="sm">
+      <div className="flex h-full w-full flex-col border-r border-border bg-card lg:w-64">
+        <div className="border-b border-border p-3 sm:p-4">
+          <Button onClick={onNewChat} className="h-11 w-full" size="sm">
             <Plus className="mr-2 h-4 w-4" />
             New Chat
           </Button>
@@ -65,7 +65,7 @@ export function ChatHistoryPanel({
               chats.map((chat) => (
                 <div
                   key={chat.chatId}
-                  className={`group flex items-center gap-2 rounded-lg px-3 py-2 transition-colors hover:bg-accent ${
+                  className={`group flex min-h-[44px] items-center gap-2 rounded-lg px-3 py-2.5 transition-colors hover:bg-accent ${
                     selectedChatId === Number(chat.chatId)
                       ? 'bg-accent text-accent-foreground'
                       : 'text-muted-foreground'
@@ -81,10 +81,10 @@ export function ChatHistoryPanel({
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-6 w-6 shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
+                    className="h-8 w-8 shrink-0 opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100"
                     onClick={(e) => handleDeleteClick(Number(chat.chatId), e)}
                   >
-                    <Trash2 className="h-3 w-3" />
+                    <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
               ))
@@ -94,16 +94,18 @@ export function ChatHistoryPanel({
       </div>
 
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent className="max-w-[90vw] sm:max-w-md">
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Chat</AlertDialogTitle>
             <AlertDialogDescription>
               Are you sure you want to delete this chat? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmDelete}>Delete</AlertDialogAction>
+          <AlertDialogFooter className="flex-col gap-2 sm:flex-row">
+            <AlertDialogCancel className="h-11 w-full sm:w-auto">Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmDelete} className="h-11 w-full sm:w-auto">
+              Delete
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

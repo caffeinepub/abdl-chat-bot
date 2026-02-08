@@ -1,13 +1,14 @@
 # Specification
 
 ## Summary
-**Goal:** Add Internet Identity authentication UI, multi-conversation chat history, and automatic chat persistence (local for anonymous users and backend for signed-in users).
+**Goal:** Make the chatbot UI fully usable on mobile and tablets with responsive layout and touch-friendly interactions.
 
 **Planned changes:**
-- Add visible Sign in/Sign out actions using the existing Internet Identity provider/hooks and display an authenticated state indicator in English.
-- Refactor the chat screen from a single in-memory conversation to support selecting among multiple conversations while keeping Safety & Usage and Developer Safety Note UI intact.
-- Implement a chat history UI (tabs/sidebar/list) to create new chats, switch between past chats, and delete a chat with a basic confirmation.
-- Add automatic save/restore of conversations: persist to backend when authenticated; otherwise auto-save locally and restore on refresh for the same browser; trigger auto-save on send and on assistant reply.
-- Extend the Motoko backend (single-actor, main.mo) with per-user (principal-scoped) chat persistence endpoints: create/list/get/append/delete, with stable storage suitable for upgrades and defined handling for anonymous callers.
+- Update the main layout to be responsive on small screens, preventing horizontal scrolling and adapting padding/max-width for the chat column.
+- Change the authenticated chat history panel behavior on mobile so it no longer permanently consumes width (e.g., collapses or is accessed via a toggle/drawer), while still allowing create/select/delete actions.
+- Adjust header actions (Safety & Usage, Clear Chat when present, Sign in/out) so they remain reachable on mobile without overlap or clipping (wrapping or overflow behavior).
+- Improve mobile ergonomics across the chat UI: ensure key tap targets meet touch-friendly sizing, keep the composer accessible at the bottom, and ensure textarea/send controls remain visible and usable with the on-screen keyboard.
+- Ensure dialogs render within the mobile viewport with scrollable content when needed (e.g., Safety & Usage, delete confirmation), with no cut-off content.
+- Scale message bubbles, avatars, and text appropriately for small screens; remove/avoid fixed widths that break narrow layouts.
 
-**User-visible outcome:** Users can sign in/out with Internet Identity, see whether they’re signed in, manage multiple past chats (create/switch/delete), and have chats automatically restored after refresh (and after logging back in when authenticated).
+**User-visible outcome:** On phones and tablets, the chat app fits the screen, the chat history is accessible via a mobile-friendly toggle, header controls remain usable, messages and the composer work smoothly (including with the keyboard), and dialogs display correctly without clipped content.

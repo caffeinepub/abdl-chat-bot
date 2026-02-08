@@ -1,118 +1,86 @@
 {
   "kind": "build_request",
-  "title": "Add authentication, chat history tabs, and auto-save chat persistence",
+  "title": "Make the chatbot UI mobile-accessible (responsive + touch-friendly)",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-7",
-      "text": "Add Internet Identity login/logout UI so users can \"login/signup\" and the app clearly reflects whether the user is authenticated.",
+      "id": "REQ-12",
+      "text": "Make the main layout responsive so the chat experience is fully usable on phones and tablets, including proper handling of the authenticated chat history panel.",
       "target": "frontend",
       "source": {
         "messageIds": [
           "msg-6"
         ],
         "quotes": [
-          "Can you add somethings that chatgpt has. The things I want you to add are; tabs of past chats, login/signup, and auto save for chats."
+          "Can you make it accessible for mobile too"
         ]
       },
       "acceptanceCriteria": [
-        "A \"Sign in\" (or equivalent) action is visible when the user is not authenticated and triggers Internet Identity login via the existing InternetIdentityProvider.",
-        "A \"Sign out\" action is visible when the user is authenticated and logs the user out via the existing Internet Identity hook.",
-        "The UI displays an authenticated state indicator (e.g., \"Signed in\") and does not expose any secrets or API keys.",
-        "All user-facing authentication text is in English."
+        "On small screens (e.g., 320–480px wide), the app content fits without horizontal scrolling.",
+        "When authenticated, the chat history sidebar does not permanently consume screen width on mobile; it is hidden behind a toggle (e.g., drawer/sheet) or collapses, and the user can still create/select/delete chats from it.",
+        "Header actions (Safety & Usage, Clear Chat when present, Sign in/out) remain reachable on mobile (wrap to multiple lines or move into an overflow menu) without overlapping/clipping.",
+        "The messages list and composer remain usable on mobile: messages area scrolls independently and the composer stays accessible at the bottom without being pushed off-screen."
       ]
     },
     {
-      "id": "REQ-8",
-      "text": "Implement chat history tabs/list UI (similar to ChatGPT) that allows switching between multiple past conversations for the current user.",
+      "id": "REQ-13",
+      "text": "Improve mobile ergonomics and accessibility for touch devices across the chat UI (composer, buttons, dialogs).",
       "target": "frontend",
       "source": {
         "messageIds": [
           "msg-6"
         ],
         "quotes": [
-          "tabs of past chats"
+          "Can you make it accessible for mobile too"
         ]
       },
       "acceptanceCriteria": [
-        "The app shows a conversation list (tabs/sidebar/list) containing previously created chats for the current user context.",
-        "The user can create a new chat and switch between chats without losing data.",
-        "The user can delete a chat from history (with a basic confirmation to prevent accidental deletion).",
-        "Switching chats updates the message list to the selected conversation’s messages."
+        "Primary interactive targets used frequently on mobile (send button, new chat, chat row tap area, sign in/out) meet a touch-friendly minimum size and spacing (at least ~44px tap target).",
+        "Text input is comfortable on mobile: the textarea and send button do not overflow the viewport and remain visible when the on-screen keyboard is open.",
+        "Dialogs (e.g., Safety & Usage, delete chat confirmation) render within the viewport on mobile with scrollable content when needed, and no content is cut off."
       ]
     },
     {
-      "id": "REQ-9",
-      "text": "Add automatic saving and restoring of chats so conversation state persists across refresh and can be restored later, with behavior dependent on authentication state.",
-      "target": "both",
-      "source": {
-        "messageIds": [
-          "msg-6"
-        ],
-        "quotes": [
-          "auto save for chats"
-        ]
-      },
-      "acceptanceCriteria": [
-        "When authenticated, chats are persisted to the backend and are restored after refresh and after logging back in.",
-        "When not authenticated, the current chat is auto-saved locally (e.g., browser storage) and restored after refresh for the same browser.",
-        "Auto-save happens automatically on send and when assistant replies are received; users do not need to click a save button.",
-        "No data loss occurs when refreshing the page during normal use (excluding in-flight requests)."
-      ]
-    },
-    {
-      "id": "REQ-10",
-      "text": "Extend the Motoko backend to support per-user chat persistence needed for chat history: create/list/get/update/delete chats, scoped to the authenticated caller principal.",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-6"
-        ],
-        "quotes": [
-          "tabs of past chats, login/signup, and auto save for chats."
-        ]
-      },
-      "acceptanceCriteria": [
-        "Backend exposes methods to create a chat, list chats for the caller, fetch a chat’s messages, append messages (user and assistant), and delete a chat.",
-        "All persisted chat data is scoped so one principal cannot read or modify another principal’s chats.",
-        "Anonymous callers either receive an explicit error for persistence endpoints or are handled in a clearly defined way (frontend must still function with local persistence when anonymous).",
-        "State is stored using stable data structures suitable for upgrade; only create backend/migration.mo if required by an actual state upgrade constraint."
-      ]
-    },
-    {
-      "id": "REQ-11",
-      "text": "Refactor the existing single-chat in-memory state in the main chat screen to support multi-chat selection and persistence while keeping existing Safety & Usage and Developer Safety Note UI intact.",
+      "id": "REQ-14",
+      "text": "Ensure the UI uses mobile-safe sizing and spacing throughout the main containers (header/main/footer) and chat area widths.",
       "target": "frontend",
       "source": {
         "messageIds": [
           "msg-6"
         ],
         "quotes": [
-          "tabs of past chats, login/signup, and auto save for chats."
+          "Can you make it accessible for mobile too"
         ]
       },
       "acceptanceCriteria": [
-        "The existing Safety & Usage dialog remains accessible and unchanged in meaning.",
-        "The existing DeveloperSafetyNote remains visible and unchanged in meaning.",
-        "The existing \"Clear Chat\" behavior is updated to clear the currently selected conversation (not all conversations) and remains visible only when there is content to clear.",
-        "The app continues to show loading and error states for sending messages, and errors are displayed in English."
+        "The main chat column max width and padding adapt to small screens (reduced side padding, no forced max-width that causes cramped layout).",
+        "The chat message bubbles and avatars scale appropriately on mobile (no clipped avatars, no unreadably small text).",
+        "No fixed-width container (e.g., the chat history panel width) causes layout breakage on narrow screens."
       ]
     }
   ],
   "constraints": [
-    "Backend must remain a single-actor Motoko canister with all logic in backend/main.mo.",
-    "Do not edit files under frontend/immutablePaths (e.g., frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, and frontend/src/components/ui); compose them from other code instead.",
-    "Do not use or store any user-provided OpenAI API key; do not introduce any client-side secret handling.",
-    "Do not add third-party authentication providers; use Internet Identity only."
+    "Do not edit files under frontend/src/components/ui (read-only Shadcn components); compose/wrap them instead.",
+    "Keep the existing Safety & Usage disclosure, Developer Safety Note, chat history, autosave, and Internet Identity login/logout behavior intact.",
+    "Do not introduce new backend canisters/services; this request should be satisfied with frontend-only changes."
   ],
   "nonGoals": [
-    "Implementing real ChatGPT/LLM functionality or integrating external LLM APIs.",
-    "Adding real-time messaging (WebSockets) or push notifications.",
-    "Adding external databases or non-Motoko backend services.",
-    "Supporting explicit sexual/fetish content (the app remains PG-13 and may refuse disallowed content)."
+    "Adding a native mobile app (iOS/Android).",
+    "Adding new chatbot capabilities or changing content/safety policy behavior.",
+    "Backend schema/state migrations."
   ],
   "imageRequirements": {
     "required": [],
     "edits": []
+  },
+  "userProfileUpdate": {
+    "goalsToAdd": [],
+    "goalsToRemove": [],
+    "preferencesToAdd": [],
+    "preferencesToRemove": [],
+    "miscToAdd": [],
+    "miscToRemove": [],
+    "fieldsToSet": {},
+    "fieldsToDelete": []
   }
 }
