@@ -1,0 +1,79 @@
+{
+  "kind": "spec_vs_diff_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-08T01:12:11.520Z",
+  "summary": "Frontend adds a branded chat UI with message components, safety modal, clear-chat control, and a developer security warning component. Backend adds a single method but it currently traps unconditionally instead of returning safe replies or conditional refusals. Generated image assets are referenced in the UI but are not present in the diff under the required public assets path. Loading/error UX and error-handling acceptance criteria appear only partially implemented.",
+  "missing_requirements": [
+    {
+      "id": "REQ-1",
+      "requirement": "Chat UI must include a loading state while waiting for a reply.",
+      "reason": "The diff shows a React Query mutation but no visible loading indicator is evidenced in the provided App.tsx snippet (truncated before the composer/render of loading state), and no other file shows a loading indicator component/state rendering.",
+      "evidence": [
+        "frontend/src/App.tsx (truncated)"
+      ]
+    },
+    {
+      "id": "REQ-1",
+      "requirement": "Any failure to get a reply shows a non-technical error message in English and keeps the user’s message visible.",
+      "reason": "On error, the UI sets an error message but the user message is only appended in onSuccess; there is no evidence the user message is added before sending, so a failed request likely results in the user message not appearing in the message list.",
+      "evidence": [
+        "frontend/src/App.tsx (truncated)"
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "requirement": "Backend chatbot reply endpoint must return safe, non-explicit responses for non-explicit messages, and refuse only when explicit/fetish/non-consensual content is requested (with a clear refusal message and safer alternative).",
+      "reason": "The backend method always traps with a refusal/violation message; it does not return a Text response, does not conditionally detect explicit requests, and provides no safe replies for normal prompts.",
+      "evidence": [
+        "backend/main.mo"
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "requirement": "Generated images must be added under frontend/public/assets/generated (logo and assistant avatar).",
+      "reason": "The UI references the required image filenames under /assets/generated, but the diff does not include any added files under frontend/public/assets/generated.",
+      "evidence": [
+        "frontend/src/App.tsx (truncated)",
+        "frontend/src/components/ChatMessage.tsx"
+      ]
+    }
+  ],
+  "hallucinated_features": [
+    {
+      "description": "Backend uses Runtime.trap() to hard-fail requests with an 'incident flagged' message rather than returning a normal refusal response.",
+      "reason": "The BuildRequest requires returning an assistant message (including refusals) from a single update method; trapping is an unrequested behavior and breaks the required endpoint contract/UX.",
+      "evidence": [
+        "backend/main.mo"
+      ]
+    },
+    {
+      "description": "Internet Identity authentication/actor creation hooks are included in the diff output even though third-party auth beyond Internet Identity is a non-goal and the BuildRequest did not ask for adding/auth wiring changes.",
+      "reason": "These additions are not explicitly requested by any REQ and may be unrelated scope (also these paths are listed as immutable in constraints, though the diff summary reports them as added).",
+      "evidence": [
+        "frontend/src/hooks/useActor.ts",
+        "frontend/src/hooks/useInternetIdentity.ts",
+        "frontend/src/main.tsx"
+      ]
+    }
+  ],
+  "confidence": 0.72,
+  "changed_files": [
+    "all_files_summary.json",
+    "backend/main.mo",
+    "frontend-file-summaries.txt",
+    "frontend/index.css",
+    "frontend/index.html",
+    "frontend/src/App.tsx",
+    "frontend/src/components/ChatComposer.tsx",
+    "frontend/src/components/ChatMessage.tsx",
+    "frontend/src/components/DeveloperSafetyNote.tsx",
+    "frontend/src/components/SafetyUsage.tsx",
+    "frontend/src/hooks/useActor.ts",
+    "frontend/src/hooks/useInternetIdentity.ts",
+    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/index.css",
+    "frontend/src/main.tsx",
+    "frontend/tailwind.config.js",
+    "project_state.json"
+  ]
+}

@@ -1,2 +1,3 @@
-# abdl-chat-bot
-Exported from Caffeine project: Abdl Chat Bot
+## Abdl Chat Bot
+
+To run app build and run docker image: `docker build -t app . docker run -it --network host app`

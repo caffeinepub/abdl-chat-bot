@@ -1,0 +1,131 @@
+{
+  "kind": "build_request",
+  "title": "Create a safe, general-purpose chatbot website (Abdl Chat Bot branding) without explicit adult content or external LLM integrations",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Build a basic chatbot web UI branded as “Abdl Chat Bot” that supports a standard PG-13 conversation experience (no explicit sexual content). The chat UI must include: a message list (user/assistant styling), a text input, send button, loading state, and error state.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user-1"
+        ],
+        "quotes": [
+          "This ai chat bot is called \"Abdl Chat Bot.\""
+        ]
+      },
+      "acceptanceCriteria": [
+        "The app displays a chat interface with a scrollable message history and a composer to send messages.",
+        "Messages are visually distinguished between user and assistant.",
+        "Sending a message shows a loading indicator until a reply is returned.",
+        "Any failure to get a reply shows a non-technical error message in English and keeps the user’s message visible."
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Implement a backend chatbot reply endpoint that returns safe, non-explicit responses. The backend must refuse or redirect requests for explicit sexual content, fetish content, or non-consensual content, and must respond with a clear refusal message in English when such content is requested.",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-user-1"
+        ],
+        "quotes": [
+          "a ai chat bot that can do anything the person wants including sex, diaper focused, diaper peeing/pooping, abdl, and more."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Backend exposes a single update method that accepts a user message and returns an assistant message.",
+        "When the user message requests explicit sexual/fetish content, the assistant response refuses and offers a safer alternative (e.g., general relationship advice, non-explicit wellness tips, or a different topic).",
+        "For non-explicit messages, the assistant returns a helpful, coherent response (rule-based is acceptable)."
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Add a simple “Safety & Usage” disclosure in the UI stating that the chatbot does not provide explicit sexual content and may refuse certain requests, and provide a visible “Clear chat” action that resets the current conversation in the UI.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user-1"
+        ],
+        "quotes": [
+          "can do anything the person wants including sex..."
+        ]
+      },
+      "acceptanceCriteria": [
+        "A clearly visible “Safety & Usage” section (or modal) is present and written in English.",
+        "A “Clear chat” control removes all messages from the current chat view without requiring a page refresh."
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Do not use or store any user-provided OpenAI API key. Add a developer-facing note in the repo (e.g., in a visible frontend screen or a documentation page in-app) warning that the posted key is compromised and must be revoked/rotated, and that secrets must never be pasted into chat or committed to the codebase.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-user-1"
+        ],
+        "quotes": [
+          "The openai code is; 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."
+        ]
+      },
+      "acceptanceCriteria": [
+        "No code contains the provided API key string.",
+        "The app includes a clear warning (in English) that the shared key must be revoked/rotated and that API keys should be stored as secrets, not in client code or chat logs."
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "text": "Establish a coherent visual theme for the app (colors, typography, spacing, and layout) and apply it consistently across the chat screen. Do not use a blue/purple primary palette.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user-1"
+        ]
+      },
+      "acceptanceCriteria": [
+        "UI uses a consistent theme (e.g., warm neutrals with a teal/green accent, or monochrome with an accent) applied across header, chat bubbles, buttons, and background.",
+        "The primary palette is not blue/purple.",
+        "Layout looks intentional on mobile and desktop widths."
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "text": "Generate and include a simple brand asset set as static images, and render them in the UI: an app logo and an assistant avatar.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user-1"
+        ],
+        "quotes": [
+          "This ai chat bot is called \"Abdl Chat Bot.\""
+        ]
+      },
+      "acceptanceCriteria": [
+        "Generated images are added under frontend/public/assets/generated.",
+        "The logo is visible in the app header (or landing area).",
+        "The assistant avatar is shown next to assistant messages (or in the chat header)."
+      ]
+    }
+  ],
+  "constraints": [
+    "Do not build or enable explicit sexual content, fetish content (including ABDL/diaper/urination/defecation), or “anything the person wants” behavior.",
+    "Do not integrate OpenAI or any other external LLM/AI service (no external API calls for chat responses).",
+    "Do not store, hardcode, or expose any API keys in frontend or backend code.",
+    "Frontend files under immutable paths must not be edited: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui."
+  ],
+  "nonGoals": [
+    "Roleplay or content generation involving explicit sexual content or fetish content.",
+    "Third-party authentication beyond Internet Identity.",
+    "Real-time chat via websockets/push notifications.",
+    "Payments, subscriptions, or age-gating flows.",
+    "External database integrations."
+  ],
+  "imageRequirements": {
+    "required": [
+      "Minimal typographic logo reading “Abdl Chat Bot”, warm neutral background with teal accent (abdl-chat-bot-logo.dim_512x512.png)",
+      "Friendly simple robot head avatar icon, flat vector style, warm neutral + teal palette (abdl-chat-bot-avatar.dim_256x256.png)"
+    ],
+    "edits": []
+  }
+}

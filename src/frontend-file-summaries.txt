@@ -1,0 +1,10 @@
+{
+  "frontend/src/App.tsx": "Main application component that renders the chat interface with header, message list, composer, error handling, and safety/developer notes with clear chat functionality.",
+  "frontend/src/components/ChatMessage.tsx": "Reusable chat message component that displays user and assistant messages with distinct styling and avatars.",
+  "frontend/src/components/ChatComposer.tsx": "Chat input component with textarea and send button, supporting Enter to send and Shift+Enter for new lines.",
+  "frontend/src/components/SafetyUsage.tsx": "Safety and usage guidelines dialog content explaining content policies, request refusals, and acceptable use cases.",
+  "frontend/src/components/DeveloperSafetyNote.tsx": "Collapsible developer warning about API key exposure and security best practices for handling secrets.",
+  "frontend/src/index.css": "Global styles with warm neutral color palette and teal/green accent using OKLCH color system for both light and dark modes.",
+  "frontend/tailwind.config.js": "Tailwind configuration with custom color tokens, Inter font family, and extended design system utilities.",
+  "frontend/src/hooks/useQueries.ts": "React Query hook for sending messages to the backend chatbot endpoint."
+}

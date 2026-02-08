@@ -1,0 +1,19 @@
+{
+  "backend/main.mo": "Actor exposes a single getChatbotReply method that always traps with a safety violation message.",
+  "feature_evidence.json": "Describes feature evidence linking UI and safety requirements to specific frontend files.",
+  "frontend-file-summaries.txt": "Lists short descriptive summaries for key frontend files used in the project.",
+  "frontend/index.css": "Defines global Tailwind base styles and a custom OKLCH color theme for light and dark modes.",
+  "frontend/index.html": "Root HTML file that mounts the React app and loads the main script.",
+  "frontend/src/App.tsx": "Main React component managing chat state, backend calls, message list rendering, safety dialogs, and clear-chat function.",
+  "frontend/src/components/ChatComposer.tsx": "Message input component with textarea, send button, and Enter/Shift+Enter behavior.",
+  "frontend/src/components/ChatMessage.tsx": "Renders individual chat messages with user/assistant avatars and styling.",
+  "frontend/src/components/DeveloperSafetyNote.tsx": "Collapsible warning explaining API key exposure risks and best security practices.",
+  "frontend/src/components/SafetyUsage.tsx": "Safety and usage guidelines dialog describing content policies and acceptable behavior.",
+  "frontend/src/hooks/useActor.ts": "Creates and manages an authenticated or anonymous backend canister actor using React Query.",
+  "frontend/src/hooks/useInternetIdentity.ts": "Provides a React context and provider for Internet Identity authentication, wrapping AuthClient setup, login, logout, and identity state management.",
+  "frontend/src/hooks/useQueries.ts": "Defines a React Query mutation for sending a message to the backend via actor.getChatbotReply and invalidates the messages query on success.",
+  "frontend/src/index.css": "Configures Tailwind base styles and extensive OKLCH CSS variables for light and dark themes, plus utility additions like text-balance.",
+  "frontend/src/main.tsx": "Bootstraps the React app, setting up React Query and InternetIdentityProvider before rendering App.",
+  "frontend/tailwind.config.js": "Tailwind configuration extending theme colors from CSS variables, adding fonts, container settings, animations, and plugin integrations.",
+  "project_state.json": "Tracks project metadata, safety constraints, existing features, and required assets, including notes about prohibited explicit content and compromised API keys."
+}

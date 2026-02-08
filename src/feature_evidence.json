@@ -1,0 +1,101 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-build-a-basic-chatbot-web-ui-branded-as-abdl-chat-bot-that-supports-a-standard-pg-13-conversation-experience-no-explicit-sexual-content-the-chat-ui-must-include-a-message-list-user-assistant-styling-a-text-input-send-button-loading-state-and-error-state",
+      "featureTitle": "Build a basic chatbot web UI branded as “Abdl Chat Bot” that supports a standard PG-13 conversation experience (no explicit sexual content). The chat UI must include: a message list (user/assistant styling), a text input, send button, loading state, and error state.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/ChatComposer.tsx",
+        "frontend/src/components/ChatMessage.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-a-simple-safety-usage-disclosure-in-the-ui-stating-that-the-chatbot-does-not-provide-explicit-sexual-content-and-may-refuse-certain-requests-and-provide-a-visible-clear-chat-action-that-resets-the-current-conversation-in-the-ui",
+      "featureTitle": "Add a simple “Safety & Usage” disclosure in the UI stating that the chatbot does not provide explicit sexual content and may refuse certain requests, and provide a visible “Clear chat” action that resets the current conversation in the UI.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/SafetyUsage.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-3"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-do-not-use-or-store-any-user-provided-openai-api-key-add-a-developer-facing-note-in-the-repo-e-g-in-a-visible-frontend-screen-or-a-documentation-page-in-app-warning-that-the-posted-key-is-compromised-and-must-be-revoked-rotated-and-that-secrets-must-never-be-pasted-into-chat-or-committed-to-the-codebase",
+      "featureTitle": "Do not use or store any user-provided OpenAI API key. Add a developer-facing note in the repo (e.g., in a visible frontend screen or a documentation page in-app) warning that the posted key is compromised and must be revoked/rotated, and that secrets must never be pasted into chat or committed to the codebase.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/DeveloperSafetyNote.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-4"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-establish-a-coherent-visual-theme-for-the-app-colors-typography-spacing-and-layout-and-apply-it-consistently-across-the-chat-screen-do-not-use-a-blue-purple-primary-palette",
+      "featureTitle": "Establish a coherent visual theme for the app (colors, typography, spacing, and layout) and apply it consistently across the chat screen. Do not use a blue/purple primary palette.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/index.css"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-5"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-generate-and-include-a-simple-brand-asset-set-as-static-images-and-render-them-in-the-ui-an-app-logo-and-an-assistant-avatar",
+      "featureTitle": "Generate and include a simple brand asset set as static images, and render them in the UI: an app logo and an assistant avatar.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/ChatMessage.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-6"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

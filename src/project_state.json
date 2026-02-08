@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 3,
+  "summary": "Website project for an AI chatbot (\"Abdl Chat Bot\") requested to support explicit sexual/fetish (ABDL/diaper/urination/defecation) content; this scope is policy-restricted and should be treated as blocked/unsafe. User also shared an OpenAI API key publicly (security risk).",
+  "architectural_notes": [
+    "Do not implement explicit sexual/fetish content features; require safety/compliance constraints for chatbot behavior.",
+    "Treat any user-shared API keys as compromised; require secure secret storage (server-side env vars) and never expose keys client-side."
+  ],
+  "known_issues": [
+    "User posted an OpenAI API key in chat; key must be rotated/revoked and replaced with a securely stored secret."
+  ],
+  "isFixRequest": false,
+  "imageRequirements": "## Required Images\n- Minimal typographic logo reading “Abdl Chat Bot”, warm neutral background with teal accent (abdl-chat-bot-logo.dim_512x512.png)\n- Friendly simple robot head avatar icon, flat vector style, warm neutral + teal palette (abdl-chat-bot-avatar.dim_256x256.png)",
+  "existing_features": [
+    {
+      "id": "feature-build-a-basic-chatbot-web-ui-branded-as-abdl-chat-bot-that-supports-a-standard-pg-13-conversation-experience-no-explicit-sexual-content-the-chat-ui-must-include-a-message-list-user-assistant-styling-a-text-input-send-button-loading-state-and-error-state",
+      "title": "Build a basic chatbot web UI branded as “Abdl Chat Bot” that supports a standard PG-13 conversation experience (no explicit sexual content). The chat UI must include: a message list (user/assistant styling), a text input, send button, loading state, and error state.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-simple-safety-usage-disclosure-in-the-ui-stating-that-the-chatbot-does-not-provide-explicit-sexual-content-and-may-refuse-certain-requests-and-provide-a-visible-clear-chat-action-that-resets-the-current-conversation-in-the-ui",
+      "title": "Add a simple “Safety & Usage” disclosure in the UI stating that the chatbot does not provide explicit sexual content and may refuse certain requests, and provide a visible “Clear chat” action that resets the current conversation in the UI.",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-do-not-use-or-store-any-user-provided-openai-api-key-add-a-developer-facing-note-in-the-repo-e-g-in-a-visible-frontend-screen-or-a-documentation-page-in-app-warning-that-the-posted-key-is-compromised-and-must-be-revoked-rotated-and-that-secrets-must-never-be-pasted-into-chat-or-committed-to-the-codebase",
+      "title": "Do not use or store any user-provided OpenAI API key. Add a developer-facing note in the repo (e.g., in a visible frontend screen or a documentation page in-app) warning that the posted key is compromised and must be revoked/rotated, and that secrets must never be pasted into chat or committed to the codebase.",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-establish-a-coherent-visual-theme-for-the-app-colors-typography-spacing-and-layout-and-apply-it-consistently-across-the-chat-screen-do-not-use-a-blue-purple-primary-palette",
+      "title": "Establish a coherent visual theme for the app (colors, typography, spacing, and layout) and apply it consistently across the chat screen. Do not use a blue/purple primary palette.",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-generate-and-include-a-simple-brand-asset-set-as-static-images-and-render-them-in-the-ui-an-app-logo-and-an-assistant-avatar",
+      "title": "Generate and include a simple brand asset set as static images, and render them in the UI: an app logo and an assistant avatar.",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Build a website with an AI chatbot called \"Abdl Chat Bot\" (requested explicit adult/fetish content capabilities)",
+      "reqIds": [],
+      "status": "blocked"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Implement a backend chatbot reply endpoint that returns safe, non-explicit responses. The backend must refuse or redirect requests for explicit sexual content, fetish content, or non-consensual content, and must respond with a clear refusal message in English when such content is requested.",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "status": "pending"
+    }
+  ],
+  "gameProjectType": "none",
+  "projectName": "Abdl Chat Bot",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}
